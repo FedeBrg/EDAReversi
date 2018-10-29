@@ -1,4 +1,5 @@
 # EDAReversi
 
 
+hode
 cghjchm
