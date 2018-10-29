@@ -1,1 +1,4 @@
 # EDAReversi
+
+
+cghjchm
