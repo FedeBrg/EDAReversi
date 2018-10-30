@@ -12,7 +12,7 @@ public class Board {
 		return null;
 		
 	}
-	
+	hola
 	private boolean isValidMove(Board move) {
 		return false;
 		
