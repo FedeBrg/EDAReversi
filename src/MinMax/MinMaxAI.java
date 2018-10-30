@@ -1,7 +1,6 @@
 package MinMax;
 
 import back.Board;
-import back.Game;
 
 import java.util.LinkedList;
 import java.util.List;
