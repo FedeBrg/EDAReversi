@@ -1,12 +1,16 @@
 package back;
 
-
 public abstract class Player {
 	
-	private Piece color;
+	private int score;
+	private int colour;
 	
-	private Game game;
+	Player(int colour){
+		this.score = 0;
+		this.colour = colour;
+	}
 	
-	
-
+	public void setScore(int score) {
+		this.score = score;
+	}
 }
