@@ -8,6 +8,6 @@ public class MinMaxNode {
 
     MinMaxNode(Board board){
         this.board=board;
-        this.score=board.score();
+        this.score=board.score;
     }
 }

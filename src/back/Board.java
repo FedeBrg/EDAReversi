@@ -6,7 +6,7 @@ public class Board {
 		
 	public int[][] board = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,1,2,0,0,0},
 				{0,0,0,2,1,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
-	private int score;
+	public int score;
 	private int size = 8;
 	private final static int FREE = 0;
 	private final static int BLACK = 1;
@@ -80,7 +80,10 @@ public class Board {
 			}
 			System.out.println();
 		}
-	}	
-		
+	}
+
+	public int getSize() {
+		return size;
+	}
 }
 
