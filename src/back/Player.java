@@ -3,7 +3,7 @@ package back;
 public abstract class Player {
 	
 	private int score;
-	private int colour;
+	public int colour;
 	
 	Player(int colour){
 		this.score = 0;

@@ -11,17 +11,18 @@ public class MinMaxAI {
     Game game;
     int color;
 
-    MinMaxAI(Game game,int color){
+    public MinMaxAI(Game game,int color){
         this.game=game;
         this.color=color;
     }
 
-    void MakeMove(){
+    public void makeMove(){
         List<int[][]> moves=this.getMoves();
         Random rand=new Random();
         int n=rand.nextInt();
-        game.board.board=moves.get(n%moves.size());
+        game.board.board=moves.get(1);
     }
+    
     List<int[][]> getMoves(){
         List<int[][]> moves= new LinkedList<>();
         for(int i = 0;i<game.board.getSize(); i++){

@@ -6,26 +6,40 @@ public class Board {
 		
 	public int[][] board = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,1,2,0,0,0},
 				{0,0,0,2,1,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
+	
 	public int score;
+	
 	private int size = 8;
+	
 	private final static int FREE = 0;
 	private final static int BLACK = 1;
 	private final static int WHITE = 2;
+	
 	
 	private final int[][] directions = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{-1,-1},{-1,1},{1,-1}};
 	
 	public int[][] isValidMove(int row, int col, int color) {
 		
-		boolean ret = false;		
+		boolean ret = false;
+		if(board[row][col] != 0) {
+			return null;
+		}
+		
 		
 		int [][] copy = copyMat();
 		
 		for(int i = 0; i<directions.length;i++) { 
-			ret = ret || isValidMove(row+directions[i][0],col+directions[i][1],directions[i][0],directions[i][1],color, true,copy);
+			boolean retAux = isValidMove(row+directions[i][0],col+directions[i][1],directions[i][0],directions[i][1],color, true,copy);
+			ret = ret || retAux;
 		}
+		
 		if(ret) {
+			copy[row][col] = color;
+
 			return copy;
 		}
+		
+
 		return null;
 		
 	}
@@ -42,6 +56,7 @@ public class Board {
 		else if(mat[row][col] == color) {
 			return true;
 		}
+		
 		int prevColor = mat[row][col];
 		mat[row][col] = color;
 		
@@ -69,21 +84,11 @@ public class Board {
 	private boolean outOfBounds(int row, int col) {
 		return row<0 || row>7 || col<0 || col>7;
 	}
-	
-	
-	public static void main(String[] args) {
-		Board b = new Board();
-		System.out.println(b.isValidMove(2, 4,BLACK));
-		for(int i = 0; i<8; i++) {
-			for (int j = 0; j < 8; j++) {
-				System.out.print(b.board[i][j]);
-			}
-			System.out.println();
-		}
-	}
 
 	public int getSize() {
 		return size;
 	}
+	
+		
 }
 
