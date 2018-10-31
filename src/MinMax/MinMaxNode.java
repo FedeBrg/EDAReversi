@@ -10,4 +10,5 @@ public class MinMaxNode {
         this.board=board;
         this.score=board.score;
     }
+
 }

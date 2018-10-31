@@ -88,7 +88,14 @@ public class Board {
 	public int getSize() {
 		return size;
 	}
-	
+
+	public void setBoard(int[][] board){
+	    this.board=board;
+    }
+
+    public int[][] getBoard(){
+	    return board;
+    }
 		
 }
 
