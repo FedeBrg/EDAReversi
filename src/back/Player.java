@@ -2,7 +2,7 @@ package back;
 
 public class Player {
 	
-	private int score;
+	public int score;
 	public int colour;
 	
 	Player(int colour){

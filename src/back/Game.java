@@ -2,9 +2,11 @@ package back;
 import java.util.Deque;
 import java.util.LinkedList;
 
+import MinMax.MinMaxAI;
+
 public class Game {
-		private Player p1;
-		private Player p2;
+		public Player p1;
+		public Player p2;
 		
 		public Board board;
 		private Deque<UndoNode> undoStack;
@@ -12,7 +14,7 @@ public class Game {
 		private boolean podas;
 		private int gameMode;
 		private int limit;
-		public boolean isComputerPlaying;
+		public MinMaxAI ai = null;
 		
 		public class UndoNode {
 			Board board;
@@ -32,9 +34,15 @@ public class Game {
 			this.board = new Board();
 			this.undoStack = new LinkedList<UndoNode>();
 			this.podas = podas;
-			this.isComputerPlaying = gameMode != 0;
+			if(gameMode != 0) {
+				this.ai = new MinMaxAI(p2.colour);
+			}
 			this.gameMode = gameMode;
 			this.limit = limit;
+		}
+		
+		public int[][] computerTurn(Game game){
+			return ai.makeMove(game);
 		}
 		
 		public void undo() {

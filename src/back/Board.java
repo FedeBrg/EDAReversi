@@ -1,5 +1,6 @@
 package back;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class Board {
@@ -10,7 +11,7 @@ public class Board {
 	public int score;
 	
 	private int size = 8;
-	
+	public int numberOfPieces = 4;
 	private final static int FREE = 0;
 	private final static int BLACK = 1;
 	private final static int WHITE = 2;
@@ -42,6 +43,54 @@ public class Board {
 
 		return null;
 		
+	}
+	
+	public boolean isBoardFull() {
+		int counter = 0;
+		
+		for(int i = 0; i < size; i++) {
+			for(int j = 0; j < size; j++) {
+				if(board[i][j] == 0) {
+					counter++;
+				}
+			}
+		}
+		
+		return counter == 0;
+	}
+	
+	public List<int[][]> getMoves(Game game, int colour){
+        List<int[][]> moves= new LinkedList<>();
+        for(int i = 0; i < size; i++){
+            for (int j = 0; j < size; j++) {
+                int[][] aux = isValidMove(i, j, colour);
+                if(aux != null)
+                    moves.add(aux);
+            }
+        }
+        
+        return moves;
+    }
+	
+	public int[][] hasAvailableMoves(int row, int col, int colour) {
+		boolean ret = false;
+		if(board[row][col] != 0) {
+			return null;
+		}
+		
+		int[][] copy = copyMat();
+		
+		for(int i = 0; i<directions.length;i++) { 
+			ret = ret || isValidMove(row+directions[i][0],col+directions[i][1],directions[i][0],directions[i][1],colour, true,copy);
+		}
+		
+		if(ret) {
+			copy[row][col] = colour;
+
+			return copy;
+		}
+		
+		return null;
 	}
 
 	private boolean isValidMove(int row, int col, int i, int j, int color, boolean first, int[][] mat) {
@@ -95,6 +144,20 @@ public class Board {
 
     public int[][] getBoard(){
 	    return board;
+    }
+    
+    public int calculateP1Score() {
+    	int counter = 0;
+    	
+    	for(int i = 0; i < size; i++) {
+    		for(int j = 0; j < size; j++) {
+    			if(board[i][j] == 1) {
+    				counter++;
+    			}
+    		}
+    	}
+    	
+    	return counter;
     }
 		
 }
