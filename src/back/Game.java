@@ -11,7 +11,9 @@ public class Game {
 		public Player current;
 		private boolean podas;
 		private int gameMode;
-		public boolean cpu=false;
+		private int limit;
+		public boolean isComputerPlaying;
+		
 		public class UndoNode {
 			Board board;
 			Player current;
@@ -22,31 +24,17 @@ public class Game {
 			}
 		}
 		
+		
 		public Game(int whoStart, boolean podas, int gameMode, int limit){
+			this.p1 = new Player(1);
+			this.p2 = new Player(2);
+			this.current = p1;
 			this.board = new Board();
 			this.undoStack = new LinkedList<UndoNode>();
 			this.podas = podas;
-			setPlayers(whoStart, gameMode, limit);
-		}
-		
-		public void setPlayers(int whoStart, int gameMode, int limit) {
-			if(whoStart == 0) {
-				this.p1 = new Human(1);
-				this.p2 = new Human(2);
-				this.current = p1;
-			}
-			
-			else if(whoStart == 1) {
-				this.p1 = new Computer(1, gameMode, limit);
-				this.p2 = new Human(2);
-				this.current = p1;
-			}
-			
-			else {
-				this.p1 = new Human(1);
-				this.p2 = new Computer(2, gameMode, limit);
-				this.current = p1;
-			}
+			this.isComputerPlaying = gameMode != 0;
+			this.gameMode = gameMode;
+			this.limit = limit;
 		}
 		
 		public void undo() {
@@ -63,7 +51,7 @@ public class Game {
 			undoStack.push(new UndoNode(board, current));
 		}
 		
-		public void changePlayer() {
+		public void switchPlayer() {
 			if(current == p1) {
 				current = p2;
 			}

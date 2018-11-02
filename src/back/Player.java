@@ -1,6 +1,6 @@
 package back;
 
-public abstract class Player {
+public class Player {
 	
 	private int score;
 	public int colour;
@@ -12,5 +12,9 @@ public abstract class Player {
 	
 	public void setScore(int score) {
 		this.score = score;
+	}
+	
+	public int getScore() {
+		return score;
 	}
 }
