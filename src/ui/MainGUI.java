@@ -6,7 +6,9 @@ import MinMax.MinMaxAI;
 import back.Game;
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.input.InputEvent;
 import javafx.stage.Stage;
 import javafx.scene.input.MouseEvent;
@@ -31,17 +33,15 @@ public class MainGUI extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setScene(new Scene(reversiBoard.createContent(game)));
+		primaryStage.setResizable(true);
+		Label p1Score = new Label();
+		//p1Score.textProperty().bind(game.p1.score);
+		p1Score.setAlignment(Pos.TOP_LEFT);
+		Label p2Score = new Label();
+		p2Score.setText(Integer.toString(game.p2.score));
+		p2Score.setAlignment(Pos.TOP_RIGHT);
+		
 		primaryStage.show();
-	}
-	
-	public Game startGame() {
-		return null;
-		//Proximamente solo en cines
-	}
-	
-	public ReversiBoard startBoard() {
-		return null;
-		//proximamente en cines mas turros que el de arriba
 	}
 	
 	public static void main(String[] args) {

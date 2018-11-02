@@ -24,15 +24,14 @@ public class ReversiBoard {
 	
 	private class Tile extends StackPane{
 		
-		private Circle circle = new Circle(40,40,40);
+		private Circle circle = new Circle(20,20,20);
 		private int row;
 		private int col;
-		
+		private Rectangle border;
 		public Tile(int row, int col) {
 			this.row = row;
 			this.col = col;
-			
-			Rectangle border = new Rectangle(100,100);
+			this.border = new Rectangle(50,50);
 			
 			border.setFill(Color.GREEN);
 			border.setStroke(Color.BLACK);
@@ -56,30 +55,83 @@ public class ReversiBoard {
 	
 	Parent createContent(Game game) {
 		Pane root = new Pane();
-		root.setPrefSize(900, 900);
+		root.setPrefSize(450, 450);
 		tileMatrix = new Tile[8][8];
 		
 		EventHandler mouseHandler = new EventHandler<MouseEvent>() {
 		    @Override
 		    public void handle(MouseEvent t) {
 		    	Tile tile = (Tile) t.getSource();
-		    	System.out.println(tile.row);
-		    	System.out.println(tile.col);
-		    	System.out.println("llegue1");
+		    	tile.border.setFill(Color.GREEN);
+		    	
+		    	//me fijo si el lugar donde clickee es valido
 		    	int[][] mat = game.board.isValidMove(tile.row, tile.col, game.current.colour);
-				System.out.println("llegue2");
 				
-		    	if(mat !=null) {
-					game.switchPlayer();
-					updateBoard(mat);
-					game.board.board = mat;
+		    	//si es valido, entro aca
+		    	if(mat != null) {
+		    		updateBoard(mat);
+		    		game.board.board = mat;
 					
-					if(game.isComputerPlaying) {
-						MinMaxAI ai=new MinMaxAI(game,game.current.colour);
-						ai.makeMove();
-						updateBoard(game.board.board);
+					if(game.ai != null) {
+						int[][] aiBoard = game.computerTurn(game);
+						
+						if(aiBoard != null) {
+							updateBoard(aiBoard);	
+						}
+					}
+					
+					else {
 						game.switchPlayer();
 					}
+				}
+		    	
+		    	//si entro aca es porque oclickee en cualquier lugar o porque no tengo movimientos o 
+		    	//se lleno el tablero
+		    	else {
+		    		//si se lleno el tablero
+		    		if(game.board.isBoardFull()) {
+		    			System.out.println((game.p1.score > game.p2.score)?"Player 1 won!":"Player 2 won!");
+		    		}
+		    		//si no tengo movimientos y le toca a la compu
+		    		else if(game.ai != null) {
+		    			while(game.board.hasAvailableMoves(tile.row, tile.col, game.current.colour) == null) {
+		    				int[][] aiBoard = game.computerTurn(game);
+						
+		    				if(aiBoard != null) {
+		    					updateBoard(aiBoard);	
+		    				}
+		    			}
+		    		}
+		    		//si no tengo movimientos y le toca al otro negro
+		    		else {
+		    			game.switchPlayer();
+		    		}
+		    	}
+		    		
+		}};
+		
+		EventHandler displayColour = new EventHandler<MouseEvent>() {
+		    @Override
+		    public void handle(MouseEvent t) {
+		    	Tile tile = (Tile) t.getSource();
+		    	//aca hay que poner la booleana pero no entiendo los parametros y paja preguntarles
+		    	int[][] mat = game.board.isValidMove(tile.row, tile.col, game.current.colour);
+				
+		    	if(mat !=null) {
+					tile.border.setFill(Color.YELLOW);
+				}
+		    
+		}};
+		
+		EventHandler returnColour = new EventHandler<MouseEvent>() {
+		    @Override
+		    public void handle(MouseEvent t) {
+		    	Tile tile = (Tile) t.getSource();
+		    	//aca hay que poner la booleana pero no entiendo los parametros y paja preguntarles
+		    	int[][] mat = game.board.isValidMove(tile.row, tile.col, game.current.colour);
+				
+		    	if(mat !=null) {
+					tile.border.setFill(Color.GREEN);
 				}
 		    
 		}};
@@ -88,9 +140,10 @@ public class ReversiBoard {
 			for(int j = 0; j<8;j++) {
 				Tile tile = new Tile(i,j);
 				tile.setOnMouseClicked(mouseHandler);
-				    
-				tile.setTranslateX(j*100);
-				tile.setTranslateY(i*100);
+				tile.setOnMouseEntered(displayColour);
+				tile.setOnMouseExited(returnColour);
+				tile.setTranslateX(j*50);
+				tile.setTranslateY(i*50);
 				
 				root.getChildren().add(tile);
 				tileMatrix[i][j]=tile;
