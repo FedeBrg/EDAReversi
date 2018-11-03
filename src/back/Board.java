@@ -17,7 +17,7 @@ public class Board {
 	private int[][] initialMatrix8 = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,1,2,0,0,0},{0,0,0,2,1,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
 	private int[][] initialMatrix10 = {{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,1,2,0,0,0},{0,0,0,0,2,1,0,0,0},{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0}};
 
-	private int[][] matrix;
+	public int[][] matrix;
 
 	public int score;
 
@@ -27,46 +27,46 @@ public class Board {
 	private final static int FREE = 0;
 	private final static int BLACK = 1;
 	private final static int WHITE = 2;
-	
-	
+
+
 	private final int[][] directions = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{-1,-1},{-1,1},{1,-1}};
 
 	public Board(int size){
 		this.size=size;
-
+        this.score=0;
 		this.valueMatrix=getValueBoard(size);
 		this.matrix=getMatrix(size);
 	}
 
 	public int[][] isValidMove(int row, int col, int color) {
-		
+
 		boolean ret = false;
 		if(matrix[row][col] != 0) {
 			return null;
 		}
-		
-		
+
+
 		int [][] copy = copyMat();
-		
-		for(int i = 0; i<directions.length;i++) { 
+
+		for(int i = 0; i<directions.length;i++) {
 			boolean retAux = isValidMove(row+directions[i][0],col+directions[i][1],directions[i][0],directions[i][1],color, true,copy);
 			ret = ret || retAux;
 		}
-		
+
 		if(ret) {
 			copy[row][col] = color;
 
 			return copy;
 		}
-		
+
 
 		return null;
-		
+
 	}
-	
+
 	public boolean isBoardFull() {
 		int counter = 0;
-		
+
 		for(int i = 0; i < size; i++) {
 			for(int j = 0; j < size; j++) {
 				if(matrix[i][j] == 0) {
@@ -74,71 +74,71 @@ public class Board {
 				}
 			}
 		}
-		
+
 		return counter == 0;
 	}
-	
-	public List<int[][]> getMoves(Game game, int colour){
+
+	public List<int[][]> getMoves(Game game){
         List<int[][]> moves= new LinkedList<>();
         for(int i = 0; i < size; i++){
             for (int j = 0; j < size; j++) {
-                int[][] aux = isValidMove(i, j, colour);
+                int[][] aux = isValidMove(i, j, game.getCurrent());
                 if(aux != null)
                     moves.add(aux);
             }
         }
         this.moves=moves;
-        
+
         return moves;
     }
-	
+
 	public int[][] hasAvailableMoves(int row, int col, int colour) {
 		boolean ret = false;
 		if(matrix[row][col] != 0) {
 			return null;
 		}
-		
+
 		int[][] copy = copyMat();
-		
-		for(int i = 0; i<directions.length;i++) { 
+
+		for(int i = 0; i<directions.length;i++) {
 			ret = ret || isValidMove(row+directions[i][0],col+directions[i][1],directions[i][0],directions[i][1],colour, true,copy);
 		}
-		
+
 		if(ret) {
 			copy[row][col] = colour;
 
 			return copy;
 		}
-		
+
 		return null;
 	}
 
 	private boolean isValidMove(int row, int col, int i, int j, int color, boolean first, int[][] mat) {
-		
+
 		if(outOfBounds(row ,col) || mat[row][col] == 0 ) {
 			return false;
 		}
-		
+
 		if(mat[row][col] == color && first) {
 			return false;
 		}
 		else if(mat[row][col] == color) {
 			return true;
 		}
-		
+
 		int prevColor = mat[row][col];
 		mat[row][col] = color;
-		
+
 		boolean ret = isValidMove(row+i,col+j,i,j,color,false,mat);
-		
+
 		if(!ret) {
 			mat[row][col] =prevColor;
 		}
-		
+
 		return ret;
-		
+
 	}
-	
+
 	private int [][] copyMat() {
 		int [][] mat = new int[8][8];
 		for(int i = 0; i<8; i++) {
@@ -146,10 +146,10 @@ public class Board {
 				mat[i][j] = matrix[i][j];
 			}
 		}
-		
+
 		return mat;
 	}
-	
+
 	private boolean outOfBounds(int row, int col) {
 		return row<0 || row>7 || col<0 || col>7;
 	}
@@ -163,7 +163,7 @@ public class Board {
 		switch (size){
 			default:
 				throw new IllegalArgumentException();
-			case 5:
+			case 4:
 				matriz=initialMatrix4;
 				break;
 			case 6:
@@ -183,7 +183,7 @@ public class Board {
 		switch (size){
 			default:
 				throw new IllegalArgumentException("invalid size");
-			case 5:
+			case 4:
 				matriz=matrix4;
 				break;
 			case 6:
@@ -200,15 +200,15 @@ public class Board {
 
 	public void setBoard(int[][] board){
 	    this.matrix=board;
-    }
+	    }
 
     public int[][] getBoard(){
 	    return matrix;
     }
-    
+
     public int calculatePlayerScore(int colour) {
     	int counter = 0;
-    	
+
     	for(int i = 0; i < size; i++) {
     		for(int j = 0; j < size; j++) {
     			if(matrix[i][j] == colour) {
@@ -216,18 +216,18 @@ public class Board {
     			}
     		}
     	}
-    	
+
     	return counter;
     }
 
-    public int score(int current){
+    public int calculateScore(int current){
 		score=0;
 		int i,j;
-		int[][] board=valueMatrix;
-		for(i=0;1<this.size;i++) {
+		int[][] board=matrix;
+		for(i=0;i<this.size;i++) {
 			for (j = 0; j < this.size; j++) {
 				if(current==board[i][j]){
-					score+=valueMatrix[i][j];
+					this.score+=valueMatrix[i][j];
 				}
 				else if(board[i][j]!=current &&(board[i][j]==1 || board[i][j]==2 )){
 					score-=valueMatrix[i][j];
@@ -237,6 +237,6 @@ public class Board {
 		}
 		return this.score;
 	}
-		
+	public int getScore(){return score;}
 }
 

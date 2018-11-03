@@ -35,7 +35,7 @@ public class MainGUI extends Application{
         //esta chota tiene los argumentos ahi re piyos
         List<String> rawArguments = parameters.getRaw();
         
-        this.game = new Game(0, false, 0, 0);
+        this.game = new Game(0, false, 1, 0);
         this.reversiBoard = new ReversiBoard();
         Timer timer = new Timer();
 		TimerTask somebodyHasWon = new TimerTask() {

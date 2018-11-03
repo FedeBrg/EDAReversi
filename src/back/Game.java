@@ -11,11 +11,13 @@ public class Game {
 		public Board board;
 		private Deque<UndoNode> undoStack;
 		public Player current;
-		private boolean podas;
+		public boolean podas;
 		private int gameMode;
 		private int limit;
 		public MinMaxAI ai = null;
-		
+
+
+
 		public class UndoNode {
 			Board board;
 			Player current;
@@ -68,4 +70,25 @@ public class Game {
 				current = p1;
 			}
 		}
+
+		int getScore(){
+			return board.score;
+		}
+
+		public int getCurrent() {
+			return current.getColour();
+		}
+
+
+	public boolean getPodas() {
+		return podas;
 	}
+
+	public int getGameMode() {
+		return gameMode;
+	}
+
+	public int getLimit() {
+		return limit;
+	}
+}

@@ -71,11 +71,13 @@ public class ReversiBoard {
 		    	//si es valido, entro aca
 		    	if(mat != null) {
 		    		updateBoard(mat);
-		    		game.board.board = mat;
+		    		game.board.setBoard(mat);
 					game.p1.setScore(game.board.calculatePlayerScore(game.current.colour));
 					if(game.ai != null) {
+						game.switchPlayer();
 						int[][] aiBoard = game.computerTurn(game);
-						
+						game.switchPlayer();
+
 						if(aiBoard != null) {
 							updateBoard(aiBoard);	
 						}
@@ -89,7 +91,7 @@ public class ReversiBoard {
 		    	//si entro aca es porque oclickee en cualquier lugar o porque no tengo movimientos o 
 		    	//se lleno el tablero
 		    	else {
-		    		List<int[][]> aux = game.board.getMoves(game, game.current.colour);
+		    		List<int[][]> aux = game.board.getMoves(game);
 		    		if(aux.size() == 0) {
 		    			//si no tengo movimientos y le toca a la compu
 			    		if(game.ai != null) {
@@ -151,7 +153,7 @@ public class ReversiBoard {
 			}
 		}
 		
-		updateBoard(game.board.board);
+		updateBoard(game.board.getBoard());
 		return root;
 	}
 	
