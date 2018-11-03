@@ -3,6 +3,7 @@ import MinMax.*;
 
 
 import java.util.Arrays;
+import java.util.List;
 
 import back.Board;
 import back.Game;
@@ -71,7 +72,7 @@ public class ReversiBoard {
 		    	if(mat != null) {
 		    		updateBoard(mat);
 		    		game.board.board = mat;
-					
+					game.p1.setScore(game.board.calculatePlayerScore(game.current.colour));
 					if(game.ai != null) {
 						int[][] aiBoard = game.computerTurn(game);
 						
@@ -88,24 +89,24 @@ public class ReversiBoard {
 		    	//si entro aca es porque oclickee en cualquier lugar o porque no tengo movimientos o 
 		    	//se lleno el tablero
 		    	else {
-		    		//si se lleno el tablero
-		    		if(game.board.isBoardFull()) {
-		    			System.out.println((game.p1.score > game.p2.score)?"Player 1 won!":"Player 2 won!");
+		    		List<int[][]> aux = game.board.getMoves(game, game.current.colour);
+		    		if(aux.size() == 0) {
+		    			//si no tengo movimientos y le toca a la compu
+			    		if(game.ai != null) {
+			    			while(game.board.hasAvailableMoves(tile.row, tile.col, game.current.colour) == null) {
+			    				int[][] aiBoard = game.computerTurn(game);
+							
+			    				if(aiBoard != null) {
+			    					updateBoard(aiBoard);	
+			    				}
+			    			}
+			    		}
+			    		//si no tengo movimientos y le toca al otro negro
+			    		else {
+			    			game.switchPlayer();
+			    		}
 		    		}
-		    		//si no tengo movimientos y le toca a la compu
-		    		else if(game.ai != null) {
-		    			while(game.board.hasAvailableMoves(tile.row, tile.col, game.current.colour) == null) {
-		    				int[][] aiBoard = game.computerTurn(game);
-						
-		    				if(aiBoard != null) {
-		    					updateBoard(aiBoard);	
-		    				}
-		    			}
-		    		}
-		    		//si no tengo movimientos y le toca al otro negro
-		    		else {
-		    			game.switchPlayer();
-		    		}
+		    		
 		    	}
 		    		
 		}};
