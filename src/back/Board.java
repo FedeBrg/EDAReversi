@@ -41,7 +41,7 @@ public class Board {
 	public int[][] isValidMove(int row, int col, int color) {
 		
 		boolean ret = false;
-		if(board[row][col] != 0) {
+		if(matrix[row][col] != 0) {
 			return null;
 		}
 		
@@ -69,7 +69,7 @@ public class Board {
 		
 		for(int i = 0; i < size; i++) {
 			for(int j = 0; j < size; j++) {
-				if(board[i][j] == 0) {
+				if(matrix[i][j] == 0) {
 					counter++;
 				}
 			}
@@ -94,7 +94,7 @@ public class Board {
 	
 	public int[][] hasAvailableMoves(int row, int col, int colour) {
 		boolean ret = false;
-		if(board[row][col] != 0) {
+		if(matrix[row][col] != 0) {
 			return null;
 		}
 		
@@ -143,7 +143,7 @@ public class Board {
 		int [][] mat = new int[8][8];
 		for(int i = 0; i<8; i++) {
 			for (int j = 0; j < 8; j++) {
-				mat[i][j] = board[i][j];
+				mat[i][j] = matrix[i][j];
 			}
 		}
 		
@@ -158,7 +158,7 @@ public class Board {
 		return size;
 	}
 
-	private int[][] getBoard(int size){
+	private int[][] getMatrix(int size){
 		int[][] matriz;
 		switch (size){
 			default:
@@ -199,11 +199,11 @@ public class Board {
 	}
 
 	public void setBoard(int[][] board){
-	    this.board=board;
+	    this.matrix=board;
     }
 
     public int[][] getBoard(){
-	    return board;
+	    return matrix;
     }
     
     public int calculatePlayerScore(int colour) {
@@ -211,7 +211,7 @@ public class Board {
     	
     	for(int i = 0; i < size; i++) {
     		for(int j = 0; j < size; j++) {
-    			if(board[i][j] == colour) {
+    			if(matrix[i][j] == colour) {
     				counter++;
     			}
     		}
@@ -229,7 +229,9 @@ public class Board {
 				if(current==board[i][j]){
 					score+=valueMatrix[i][j];
 				}
-				else if()
+				else if(board[i][j]!=current &&(board[i][j]==1 || board[i][j]==2 )){
+					score-=valueMatrix[i][j];
+				}
 
 			}
 		}
