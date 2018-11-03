@@ -6,7 +6,7 @@ public class Player {
 	public int colour;
 	
 	Player(int colour){
-		this.score = 0;
+		this.score = 2;
 		this.colour = colour;
 	}
 	
