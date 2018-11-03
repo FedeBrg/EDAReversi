@@ -16,17 +16,15 @@ public class MinMaxAI {
 
     public int[][] makeMove(Game game){
         List<int[][]> moves = game.board.getMoves(game, color);
-        Random rand=new Random();
-        int n=rand.nextInt();
 //        game.board.board=moves.get(1);
         int[][] toRet = minMax(moves, 1, game);
-        game.board.board = toRet;
+        game.board.setBoard(toRet);
         return toRet;
     }
 
     public int[][] minMax(List<int[][]> moves,int depth, Game game){
         Board auxBoard,board;
-        board=new  Board();
+        board=new  Board(8); // CAMBIAR
         board.setBoard(moves.get(1));
         Boolean myTurn=false;
         for(int[][] move: moves){
@@ -40,7 +38,7 @@ public class MinMaxAI {
     }
 
     Board minMaxRec(int[][] lastMove,int depth,Boolean myTurn, Game game){
-        Board board=new Board();
+        Board board=new Board(8); //CAMMBIAR
         board.setBoard(lastMove);
         if(depth==0){
 

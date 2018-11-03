@@ -31,7 +31,7 @@ public class Game {
 			this.p1 = new Player(1);
 			this.p2 = new Player(2);
 			this.current = p1;
-			this.board = new Board();
+			this.board = new Board(8);   // CAMBIAR
 			this.undoStack = new LinkedList<UndoNode>();
 			this.podas = podas;
 			if(gameMode != 0) {
