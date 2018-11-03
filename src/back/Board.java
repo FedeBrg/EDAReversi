@@ -4,12 +4,24 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Board {
-		
-	public int[][] board = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,1,2,0,0,0},
-				{0,0,0,2,1,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
-	
+
+	private int[][] matrix4 = {{99,0,0,99},{0,1,1,0},{0,1,1,0},{99,0,0,99}};
+	private int[][] matrix6 = {{99,-4,4,4,-4,99},{-4,-12,-2,-2,-12,-4},{4,-2,1,1,-2,4},{4,-2,1,1,-2,4},{-4,-12,-2,-2,-12,-4},{99,-4,4,4,-4,99}};
+	private int[][] matrix8 = {{99,-8,8,6,6,8,-8,99},{-8,-24,-4,-3,-3,-4,-24,-8},{8,-4,7,4,4,7,-4,8},{6,-3,4,1,1,4,-3,6},{6,-3,4,1,1,4,-3,6},{8,-4,7,4,4,7,-4,8},{-8,-24,-4,-3,-3,-4,-24,-8},{99,-8,8,6,6,8,-8,99}};
+	private int[][] matrix10 = {{99,-16,16,12,6,6,12,16,-16,99},{-16,-48,-8,-6,-3,-6,-8,-48,-16},{16,-8,14,8,4,4,8,14,-8,16},{12,-6,8,7,2,2,7,8,-6,12},{6,-3,4,2,1,1,2,4,-3,6},{6,-3,4,2,1,1,2,4,-3,6},{12,-6,8,7,2,2,7,8,-6,12},{16,-8,14,8,4,4,8,14,-8,16},{-16,-48,-8,-6,-3,-6,-8,-48,-16},{99,-16,16,12,6,6,12,16,-16,99}};
+	private int[][] valueMatrix;
+
+
+	private int[][] initialMatrix4 = {{0,0,0,0},{0,1,2,0},{0,2,1,0},{0,0,0,0}};
+	private int[][] initialMatrix6 = {{0,0,0,0,0,0},{0,0,0,0,0,0},{0,0,1,2,0,0},{0,0,2,1,0,0},{0,0,0,0,0,0},{0,0,0,0,0,0}};
+	private int[][] initialMatrix8 = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,1,2,0,0,0},{0,0,0,2,1,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
+	private int[][] initialMatrix10 = {{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,1,2,0,0,0},{0,0,0,0,2,1,0,0,0},{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0}};
+
+	private int[][] matrix;
+
 	public int score;
-	
+
+	public List<int[][]>moves;
 	private int size = 8;
 	public int numberOfPieces = 4;
 	private final static int FREE = 0;
@@ -18,7 +30,14 @@ public class Board {
 	
 	
 	private final int[][] directions = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{-1,-1},{-1,1},{1,-1}};
-	
+
+	public Board(int size){
+		this.size=size;
+
+		this.valueMatrix=getValueBoard(size);
+		this.matrix=getMatrix(size);
+	}
+
 	public int[][] isValidMove(int row, int col, int color) {
 		
 		boolean ret = false;
@@ -68,6 +87,7 @@ public class Board {
                     moves.add(aux);
             }
         }
+        this.moves=moves;
         
         return moves;
     }
@@ -138,6 +158,46 @@ public class Board {
 		return size;
 	}
 
+	private int[][] getBoard(int size){
+		int[][] matriz;
+		switch (size){
+			default:
+				throw new IllegalArgumentException();
+			case 5:
+				matriz=initialMatrix4;
+				break;
+			case 6:
+				matriz=initialMatrix6;
+				break;
+			case 8:
+				matriz=initialMatrix8;
+				break;
+			case 10:
+				matriz=initialMatrix10;
+		}
+		return matriz;
+	}
+
+	private int[][] getValueBoard(int size){
+		int[][] matriz;
+		switch (size){
+			default:
+				throw new IllegalArgumentException("invalid size");
+			case 5:
+				matriz=matrix4;
+				break;
+			case 6:
+				matriz=matrix6;
+				break;
+			case 8:
+				matriz=matrix8;
+				break;
+			case 10:
+				matriz=matrix10;
+		}
+		return matriz;
+	}
+
 	public void setBoard(int[][] board){
 	    this.board=board;
     }
@@ -159,6 +219,22 @@ public class Board {
     	
     	return counter;
     }
+
+    public int score(int current){
+		score=0;
+		int i,j;
+		int[][] board=valueMatrix;
+		for(i=0;1<this.size;i++) {
+			for (j = 0; j < this.size; j++) {
+				if(current==board[i][j]){
+					score+=valueMatrix[i][j];
+				}
+				else if()
+
+			}
+		}
+		return this.score;
+	}
 		
 }
 

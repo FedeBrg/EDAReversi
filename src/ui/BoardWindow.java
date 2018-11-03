@@ -94,8 +94,7 @@ public class BoardWindow {
 
             @Override
             public void run() {
-                BoardWindow cb =
-                        new BoardWindow();
+                BoardWindow cb = new BoardWindow();
 
                 JFrame f = new JFrame("ChessChamp");
                 f.add(cb.getGui());

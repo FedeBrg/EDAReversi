@@ -43,6 +43,7 @@ public class MinMaxAI {
         Board board=new Board();
         board.setBoard(lastMove);
         if(depth==0){
+
             return  board;
         }
         List<int[][]> moves = game.board.getMoves(game, color);
