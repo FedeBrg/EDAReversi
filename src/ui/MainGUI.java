@@ -7,6 +7,7 @@ import java.util.TimerTask;
 import MinMax.MinMaxAI;
 import back.Game;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,6 +15,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.InputEvent;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -47,6 +49,14 @@ public class MainGUI extends Application{
 		pane.setCenter(reversiBoard.createContent(game));
 		pane.setRight(reversiBoard.createScoreContent(game));
 		primaryStage.setScene(new Scene(pane));
+		primaryStage.setTitle("WELCOME TO THE EDA RICEFIELDS REVERSI MADERFAKER");
+		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			@Override
+			public void handle(WindowEvent window) {
+				Platform.exit();
+				System.exit(0);
+			}
+		});
 		primaryStage.show();
 	}
 	
