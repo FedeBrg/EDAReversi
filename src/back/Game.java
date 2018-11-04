@@ -94,7 +94,15 @@ public class Game {
 		public Game(int whoStart, boolean podas, int gameMode, int limit){
 			this.p1 = new Player(1);
 			this.p2 = new Player(2);
-			this.current = p1;
+			switch (whoStart){
+				default:
+				case 1:
+					this.current=p1;
+					break;
+				case 2:
+					this.current=p2;
+					break;
+			}
 			this.board = new Board(8);   // CAMBIAR
 			this.undoStack = new LinkedList<UndoNode>();
 			this.podas = podas;

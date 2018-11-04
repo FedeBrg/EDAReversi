@@ -44,7 +44,7 @@ public class MinMaxAI {
 
             nodeNumber+=1;
 
-            auxScore=minMaxRec(move,depth-1, !myTurn, current,DOT);
+            auxScore=minMaxRec(move,depth-1, !myTurn, current,DOT,null);
             if(!hasValue){
                 board.setBoard(move);
                 score=auxScore;
@@ -67,7 +67,7 @@ public class MinMaxAI {
         return board.getBoard();
     }
 
-    int minMaxRec(int[][] lastMove,int depth,Boolean myTurn, Game game,StringBuilder DOT){
+    int minMaxRec(int[][] lastMove,int depth,Boolean myTurn, Game game,StringBuilder DOT,Integer poda){
         Game current=new Game(game.getCurrent(),game.getPodas(),game.getGameMode(),game.getLimit());
         current.board.setBoard(lastMove);
         DOT.append(nodeNumber).append("\n");    //meconecte al anterior
@@ -82,23 +82,38 @@ public class MinMaxAI {
         boolean hasValue=false;
         int currentNodeNumber=nodeNumber;
         int auxScore,score=0;
+        Integer podaLocal=null;
         for(int[][] move: moves){
             DOT.append(currentNodeNumber).append("--"); //me conecto a
 
             nodeNumber+=1;
 
-            auxScore=minMaxRec(move,depth-1, !myTurn, current,DOT);
+            auxScore=minMaxRec(move,depth-1, !myTurn, current,DOT,podaLocal);
 
             if(!hasValue){
                 hasValue=true;
                 score=auxScore;
+                if(poda!=null)
+                    podaLocal=score;
             }
             else {
-                if (myTurn && auxScore > score) { //poda max
+                if (myTurn && auxScore > score) {
                     score=auxScore;
-                } else if (!myTurn && auxScore < score) { //poda min
+                    podaLocal=score;
+                } else if (!myTurn && auxScore < score) {
                     score= auxScore;
+                    podaLocal=score;
                 }
+//                if(poda!=null) {
+//                    if (!myTurn && score>=poda ) {
+//                        DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(auxScore).append("\"]\n");
+//                        return score;
+//                    }
+//                    if (myTurn && score<= poda) {
+//                        DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(auxScore).append("\"]\n");
+//                        return score;
+//                    }
+//                }
             }
         }
         DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(score).append("\"]\n");
