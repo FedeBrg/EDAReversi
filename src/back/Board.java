@@ -23,7 +23,6 @@ public class Board {
 
 	public List<int[][]>moves;
 	private int size = 8;
-	public int numberOfPieces = 4;
 	private final static int FREE = 0;
 	private final static int BLACK = 1;
 	private final static int WHITE = 2;
@@ -39,12 +38,12 @@ public class Board {
 	}
 
 	public int[][] isValidMove(int row, int col, int color) {
-
-		boolean ret = false;
+		
 		if(matrix[row][col] != 0) {
 			return null;
 		}
-
+	
+		boolean ret = false;
 
 		int [][] copy = copyMat();
 
@@ -92,25 +91,21 @@ public class Board {
         return moves;
     }
 
-	public int[][] hasAvailableMoves(int row, int col, int colour) {
+	public boolean hasAvailableMoves(int colour) {
 		boolean ret = false;
-		if(matrix[row][col] != 0) {
-			return null;
+		
+		int [][] copy = copyMat();
+		
+		for(int row = 0; row < size &&!ret; row++) {
+			for(int col = 0 ; col < size && !ret; col ++) {
+				for(int i = 0; i<directions.length && !ret;i++) {
+					ret = ret || isValidMove(row+directions[i][0],col+directions[i][1],directions[i][0],directions[i][1],colour, true,copy);
+				}
+			}
 		}
+	
 
-		int[][] copy = copyMat();
-
-		for(int i = 0; i<directions.length;i++) {
-			ret = ret || isValidMove(row+directions[i][0],col+directions[i][1],directions[i][0],directions[i][1],colour, true,copy);
-		}
-
-		if(ret) {
-			copy[row][col] = colour;
-
-			return copy;
-		}
-
-		return null;
+		return ret;
 	}
 
 	private boolean isValidMove(int row, int col, int i, int j, int color, boolean first, int[][] mat) {

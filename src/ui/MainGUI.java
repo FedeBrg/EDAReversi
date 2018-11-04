@@ -37,44 +37,15 @@ public class MainGUI extends Application{
         
         this.game = new Game(0, false, 1, 0);
         this.reversiBoard = new ReversiBoard();
-        Timer timer = new Timer();
-		TimerTask somebodyHasWon = new TimerTask() {
-			@Override
-		    public void run() {
-		    	if(game.board.isBoardFull()) {
-	    			int score1 = game.p1.score;
-	    			int score2 = game.p2.score;
-		    		
-	    			if(score1 >= score2) {
-	    				System.out.println(String.format("%s %d %s", "Player 1 won with ", score1, " balls!"));
-	    				this.cancel();
-	    			}
-	    			
-		    		else {
-		    			System.out.println(String.format("%s %d %s", "Player 2 won with ", score1, " balls!"));
-		    			this.cancel();
-		    		}
-	    			
-	    		}
-		    }
-		};
-		
-		timer.schedule(somebodyHasWon, 0, 1000);
     }
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		BorderPane pane = new BorderPane();
-		HBox hbox = new HBox();
-		VBox vbox = new VBox();
-		vbox.getChildren().add(new Text(Integer.toString(game.p1.score)));
-		vbox.getChildren().add(new Text(Integer.toString(game.p2.score)));
-		
-		Button undo = new Button("Undo");
-		hbox.getChildren().add(undo);
+		pane.setStyle("-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #dc143c, #661a33)");
+		pane.setLeft(reversiBoard.createButtons(game));
 		pane.setCenter(reversiBoard.createContent(game));
-		pane.setTop(hbox);
-		pane.setRight(vbox);
+		pane.setRight(reversiBoard.createScoreContent(game));
 		primaryStage.setScene(new Scene(pane));
 		primaryStage.show();
 	}
