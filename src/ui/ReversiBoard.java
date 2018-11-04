@@ -97,9 +97,9 @@ public class ReversiBoard {
 			    		if(game.ai != null) {
 			    			while(game.board.hasAvailableMoves(tile.row, tile.col, game.current.colour) == null) {
 			    				int[][] aiBoard = game.computerTurn(game);
-							
+
 			    				if(aiBoard != null) {
-			    					updateBoard(aiBoard);	
+			    					updateBoard(aiBoard);
 			    				}
 			    			}
 			    		}

@@ -28,13 +28,14 @@ public class MinMaxAI {
     }
 
     public int[][] minMax(List<int[][]> moves,int depth, Game game){
-        Board auxBoard,board;
+        Board board;
+        int score=0,auxScore;
         board=new  Board(8); // CAMBIAR
         board.setBoard(moves.get(1));
         Boolean myTurn=true;
         Game current=new Game(game.getCurrent(),game.getPodas(),game.getGameMode(),game.getLimit());
         current.switchPlayer();
-
+        boolean hasValue=false;
         StringBuilder DOT= new StringBuilder("graph ARBOL{\n"); //inicializo el DOT
         this.nodeNumber=0;
         int currentNodeNumber=0;
@@ -43,14 +44,19 @@ public class MinMaxAI {
 
             nodeNumber+=1;
 
-            auxBoard=minMaxRec(move,depth-1, !myTurn, current,DOT);
-            if(auxBoard.score>board.score){
-                board=auxBoard;
-                DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(lastScore).append("\"]\n");
+            auxScore=minMaxRec(move,depth-1, !myTurn, current,DOT);
+            if(!hasValue){
+                board.setBoard(move);
+                score=auxScore;
+                hasValue=true;
+            }
+            else if(auxScore>score){
+                board.setBoard(move);
+                score=auxScore;
             }
 
         }
-
+        DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(score).append("\"]\n");
 
         DOT.append("\n").append("}");
 
@@ -61,7 +67,7 @@ public class MinMaxAI {
         return board.getBoard();
     }
 
-    Board minMaxRec(int[][] lastMove,int depth,Boolean myTurn, Game game,StringBuilder DOT){
+    int minMaxRec(int[][] lastMove,int depth,Boolean myTurn, Game game,StringBuilder DOT){
         Game current=new Game(game.getCurrent(),game.getPodas(),game.getGameMode(),game.getLimit());
         current.board.setBoard(lastMove);
         DOT.append(nodeNumber).append("\n");    //meconecte al anterior
@@ -69,30 +75,35 @@ public class MinMaxAI {
         if(depth==0){
             this.lastScore=current.board.calculateScore(color);
             DOT.append(nodeNumber).append(" ").append("[label=\"").append(current.board.score).append("\"]\n");
-            return  current.board;
+            return  current.board.score;
         }
 
         List<int[][]> moves = current.board.getMoves(current);
-
-        Board auxBoard;
+        boolean hasValue=false;
         int currentNodeNumber=nodeNumber;
+        int auxScore,score=0;
         for(int[][] move: moves){
             DOT.append(currentNodeNumber).append("--"); //me conecto a
 
             nodeNumber+=1;
 
-            auxBoard=minMaxRec(move,depth-1, !myTurn, current,DOT);
-            if( myTurn && auxBoard.score>current.board.score ){ //poda max
-                DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(lastScore).append("\"]\n");
-                game.board=auxBoard;
+            auxScore=minMaxRec(move,depth-1, !myTurn, current,DOT);
+
+            if(!hasValue){
+                hasValue=true;
+                score=auxScore;
             }
-            else if( !myTurn && auxBoard.score<current.board.score ){ //poda min
-                DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(lastScore).append("\"]\n");
-                game.board=auxBoard;
+            else {
+                if (myTurn && auxScore > score) { //poda max
+                    score=auxScore;
+                } else if (!myTurn && auxScore < score) { //poda min
+                    score= auxScore;
+                }
             }
         }
-
-        return game.board;
+        DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(score).append("\"]\n");
+        lastScore=game.board.score;
+        return score;
     }
 
 }
