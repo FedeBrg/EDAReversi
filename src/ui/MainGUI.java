@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -34,10 +35,11 @@ public class MainGUI extends Application{
     public void init() throws Exception {
         super.init();
         Parameters parameters = getParameters();
-        //esta chota tiene los argumentos ahi re piyos
         List<String> rawArguments = parameters.getRaw();
         
-        this.game = new Game(1, false, 1, 0);
+        this.game = new Game(Integer.valueOf(rawArguments.get(0)), Integer.valueOf(rawArguments.get(1)), 
+        		rawArguments.get(2).toString(), Integer.valueOf(rawArguments.get(3)), rawArguments.get(4).toString());
+        
         this.reversiBoard = new ReversiBoard();
     }
 	
@@ -47,7 +49,9 @@ public class MainGUI extends Application{
 		pane.setStyle("-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #dc143c, #661a33)");
 		pane.setLeft(reversiBoard.createButtons(game));
 		pane.setCenter(reversiBoard.createContent(game));
-		pane.setRight(reversiBoard.createScoreContent(game));
+		Parent scoreboard = reversiBoard.createScoreContent(game);
+		pane.setRight(scoreboard);
+		pane.setAlignment(scoreboard, Pos.BOTTOM_CENTER);
 		primaryStage.setScene(new Scene(pane));
 		primaryStage.setTitle("WELCOME TO THE EDA RICEFIELDS REVERSI MADERFAKER");
 		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
