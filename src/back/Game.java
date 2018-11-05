@@ -17,6 +17,7 @@ public class Game {
 		public int totalPieces = 4;
 		public MinMaxAI ai;
 		public boolean gameHasStarted;
+		private int whoStart;
 
 
 
@@ -111,6 +112,7 @@ public class Game {
 			this.limit = limit;
 			this.aiType = aiType;
 			this.gameHasStarted = false;
+			this.whoStart = whoStart;
 			
 			if(whoStart == 1) {
 				this.ai = new MinMaxAI(p1.colour);
@@ -163,5 +165,13 @@ public class Game {
 
 	public int getLimit() {
 		return limit;
+	}
+	
+	public int getWhoStart() {
+		return whoStart;
+	}
+	
+	public String getAiType() {
+		return aiType;
 	}
 }
