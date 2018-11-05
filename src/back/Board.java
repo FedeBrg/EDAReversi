@@ -221,9 +221,11 @@ public class Board {
 			for (j = 0; j < this.size; j++) {
 				if(current==board[i][j]){
 					this.score+=valueMatrix[i][j];
+					this.score+=1;
 				}
 				else if(board[i][j]!=current && board[i][j]!=0 ){
 					this. score-=valueMatrix[i][j];
+					this.score-=1;
 				}
 
 			}
