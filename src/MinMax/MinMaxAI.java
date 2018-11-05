@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Random;
 
 public class MinMaxAI {
-    int color;
+    public int color;
     int nodeNumber;
     int lastScore;
 
@@ -29,13 +29,13 @@ public class MinMaxAI {
 
     public int[][] minMax(List<int[][]> moves,int depth, Game game){
         Board board;
-        int score=0,auxScore;
-        board=new  Board(8); // CAMBIAR
-        board.setBoard(moves.get(1));
-        Boolean myTurn=true;
-        Game current=new Game(game.getCurrent(),game.getPodas(),game.getGameMode(),game.getLimit());
+        int score = 0, auxScore;
+        board = new  Board(game.board.getSize());
+        board.setBoard(moves.get(0));
+        Boolean myTurn = true;
+        Game current = new Game(game.board.getSize(), game.getWhoStart(), game.getAiType(), game.getLimit(), (game.getPodas())?"on":"off");
         current.switchPlayer();
-        boolean hasValue=false;
+        boolean hasValue = false;
         StringBuilder DOT= new StringBuilder("graph ARBOL{\n"); //inicializo el DOT
         this.nodeNumber=0;
         int currentNodeNumber=0;
@@ -68,7 +68,7 @@ public class MinMaxAI {
     }
 
     int minMaxRec(int[][] lastMove,int depth,Boolean myTurn, Game game,StringBuilder DOT,Integer poda){
-        Game current=new Game(game.getCurrent(),game.getPodas(),game.getGameMode(),game.getLimit());
+        Game current=game;
         current.board.setBoard(lastMove);
         DOT.append(nodeNumber).append("\n");    //meconecte al anterior
         current.switchPlayer();
@@ -104,18 +104,9 @@ public class MinMaxAI {
                     score= auxScore;
                     podaLocal=score;
                 }
-//                if(poda!=null) {
-//                    if (!myTurn && score>=poda ) {
-//                        DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(auxScore).append("\"]\n");
-//                        return score;
-//                    }
-//                    if (myTurn && score<= poda) {
-//                        DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(auxScore).append("\"]\n");
-//                        return score;
-//                    }
-//                }
             }
         }
+        
         DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(score).append("\"]\n");
         lastScore=game.board.score;
         return score;
