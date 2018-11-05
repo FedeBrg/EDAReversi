@@ -216,12 +216,13 @@ public class Board {
     public int calculateScore(int current){
 		score=0;
 		int i,j;
+		int myPoints=0;
 		int[][] board=matrix;
 		for(i=0;i<this.size;i++) {
 			for (j = 0; j < this.size; j++) {
 				if(current==board[i][j]){
 					this.score+=valueMatrix[i][j];
-					this.score+=1;
+					myPoints+=1;
 				}
 				else if(board[i][j]!=current && board[i][j]!=0 ){
 					this. score-=valueMatrix[i][j];
@@ -230,7 +231,9 @@ public class Board {
 
 			}
 		}
-		return this.score;
+		if(myPoints==0)
+			return -1000;
+		return this.score+myPoints;
 	}
 	public int getScore(){return score;}
 }
