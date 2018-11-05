@@ -277,7 +277,7 @@ public class ReversiBoard {
 			public void handle(MouseEvent arg0) {
 				if(!game.gameHasStarted) {
 					game.startGame();
-					if(game.ai != null && game.p1.colour == game.ai.color) {
+					if(game.ai != null && game.p1.colour == game.ai.getColor()) {
 						int[][] aiBoard = game.computerTurn(game);
 						if(aiBoard != null) {
 							game.pushToStack(game.board.getBoard());

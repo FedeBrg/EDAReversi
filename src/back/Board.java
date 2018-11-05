@@ -222,8 +222,8 @@ public class Board {
 				if(current==board[i][j]){
 					this.score+=valueMatrix[i][j];
 				}
-				else if(board[i][j]!=current &&(board[i][j]==1 || board[i][j]==2 )){
-					score-=valueMatrix[i][j];
+				else if(board[i][j]!=current && board[i][j]!=0 ){
+					this. score-=valueMatrix[i][j];
 				}
 
 			}
