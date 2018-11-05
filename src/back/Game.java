@@ -12,10 +12,11 @@ public class Game {
 		public Deque<UndoNode> undoStack;
 		public Player current;
 		public boolean podas;
-		private int gameMode;
+		private String aiType;
 		private int limit;
 		public int totalPieces = 4;
-		public MinMaxAI ai = null;
+		public MinMaxAI ai;
+		public boolean gameHasStarted;
 
 
 
@@ -53,6 +54,10 @@ public class Game {
 			this.undoStack.push(new UndoNode(matrix, this.current, this.totalPieces));
 		}
 		
+		public void startGame() {
+			this.gameHasStarted = true;
+		}
+		
 		public void undo() {
 			if(undoStack.isEmpty()) {
 				return;
@@ -61,8 +66,11 @@ public class Game {
 			UndoNode toReplace = undoStack.pop();
 			
 			if(ai != null) {
-				while(toReplace.current != this.current) {
+				while(toReplace.current != current) {
 					if(undoStack.isEmpty()) {
+						this.board.setBoard(toReplace.board);
+						this.current = toReplace.current;
+						this.totalPieces = toReplace.totalPieces;
 						return;
 					}
 					
@@ -91,27 +99,30 @@ public class Game {
 		}
 		
 		
-		public Game(int whoStart, boolean podas, int gameMode, int limit){
+		public Game(int size, int whoStart, String aiType, int limit, String podas){
+			
 			this.p1 = new Player(1);
 			this.p2 = new Player(2);
-			switch (whoStart){
-				default:
-				case 1:
-					this.current=p1;
-					break;
-				case 2:
-					this.current=p2;
-					break;
-			}
-			this.board = new Board(8);   // CAMBIAR
+			
+			this.current = p1;
+			this.board = new Board(size);
 			this.undoStack = new LinkedList<UndoNode>();
-			this.podas = podas;
-			if(gameMode != 0) {
+			this.podas = (podas.equals("on"))? true:false;
+			this.limit = limit;
+			this.aiType = aiType;
+			this.gameHasStarted = false;
+			
+			if(whoStart == 1) {
+				this.ai = new MinMaxAI(p1.colour);
+			}
+			
+			else if(whoStart == 2) {
 				this.ai = new MinMaxAI(p2.colour);
 			}
 			
-			this.gameMode = gameMode;
-			this.limit = limit;
+			else {
+				this.ai = null;
+			}
 		}
 		
 		public int enemyColor() {
@@ -121,8 +132,10 @@ public class Game {
 			
 			return 1;
 		}
+		
 		public int[][] computerTurn(Game game){
-			return ai.makeMove(game);
+			int[][] toRet = ai.makeMove(game);
+			return toRet;
 		}
 		
 		public void switchPlayer() {
@@ -146,10 +159,6 @@ public class Game {
 
 	public boolean getPodas() {
 		return podas;
-	}
-
-	public int getGameMode() {
-		return gameMode;
 	}
 
 	public int getLimit() {

@@ -22,7 +22,7 @@ public class Board {
 	public int score;
 
 	public List<int[][]>moves;
-	private int size = 8;
+	private int size;
 	private final static int FREE = 0;
 	private final static int BLACK = 1;
 	private final static int WHITE = 2;
@@ -31,10 +31,10 @@ public class Board {
 	private final int[][] directions = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{-1,-1},{-1,1},{1,-1}};
 
 	public Board(int size){
-		this.size=size;
-        this.score=0;
-		this.valueMatrix=getValueBoard(size);
-		this.matrix=getMatrix(size);
+		this.size = size;
+        this.score = 0;
+		this.valueMatrix = getValueBoard(size);
+		getMatrix(size);
 	}
 
 	public int[][] isValidMove(int row, int col, int color) {
@@ -44,10 +44,9 @@ public class Board {
 		}
 	
 		boolean ret = false;
-
 		int [][] copy = copyMat();
 
-		for(int i = 0; i<directions.length;i++) {
+		for(int i = 0; i < directions.length; i++) {
 			boolean retAux = isValidMove(row+directions[i][0],col+directions[i][1],directions[i][0],directions[i][1],color, true,copy);
 			ret = ret || retAux;
 		}
@@ -135,9 +134,9 @@ public class Board {
 	}
 
 	private int [][] copyMat() {
-		int [][] mat = new int[8][8];
-		for(int i = 0; i<8; i++) {
-			for (int j = 0; j < 8; j++) {
+		int [][] mat = new int[size][size];
+		for(int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
 				mat[i][j] = matrix[i][j];
 			}
 		}
@@ -146,31 +145,30 @@ public class Board {
 	}
 
 	private boolean outOfBounds(int row, int col) {
-		return row<0 || row>7 || col<0 || col>7;
+		return row<0 || row>=size || col<0 || col>=size;
 	}
 
 	public int getSize() {
 		return size;
 	}
 
-	private int[][] getMatrix(int size){
-		int[][] matriz;
+	public void getMatrix(int size){
+		
 		switch (size){
-			default:
-				throw new IllegalArgumentException();
 			case 4:
-				matriz=initialMatrix4;
+				this.matrix = initialMatrix4;
 				break;
 			case 6:
-				matriz=initialMatrix6;
+				this.matrix = initialMatrix6;
 				break;
 			case 8:
-				matriz=initialMatrix8;
+				this.matrix = initialMatrix8;
 				break;
 			case 10:
-				matriz=initialMatrix10;
+				this.matrix = initialMatrix10;
+			default:
+				throw new IllegalArgumentException();
 		}
-		return matriz;
 	}
 
 	private int[][] getValueBoard(int size){
