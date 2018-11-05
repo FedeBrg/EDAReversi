@@ -232,8 +232,8 @@ public class Board {
 			}
 		}
 		if(myPoints==0)
-			return -1000;
-		return this.score+myPoints;
+			return this.score-=1000;
+		return this.score+=myPoints;
 	}
 	public int getScore(){return score;}
 }

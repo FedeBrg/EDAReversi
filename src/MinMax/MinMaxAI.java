@@ -16,7 +16,6 @@ public class MinMaxAI {
     public int color;
     int nodeNumber;
     int lastScore;
-    Integer podaLocal;
 
     public MinMaxAI(int color) {
         this.color = color;
@@ -24,7 +23,7 @@ public class MinMaxAI {
 
     public int[][] makeMove(Game game) {
         List<int[][]> moves = game.board.getMoves(game);
-        int[][] toRet = minMax(moves, 3, game);
+        int[][] toRet = minMax(moves, 7, game);
         game.board.setBoard(toRet);
         return toRet;
     }
@@ -40,7 +39,7 @@ public class MinMaxAI {
         this.nodeNumber = 0;
         long time=System.nanoTime();
         Integer poda=null;
-        Boolean podas=true;
+        Boolean podas=false;
         int maxTime=3;
         int currentNodeNumber = 0,score = 0, auxScore;
         for (int[][] move : moves) {
@@ -90,7 +89,6 @@ public class MinMaxAI {
         Game current = game;
         current.board.setBoard(lastMove);
         DOT.append(nodeNumber).append("\n");    //meconecte al anterior
-        current.switchPlayer();
         //CASOS BASE
         if (depth == 0) {
             this.lastScore = current.board.calculateScore(color);
@@ -98,14 +96,17 @@ public class MinMaxAI {
             return current.board.score;
         }
 
+        current.switchPlayer();
+
         List<int[][]> moves = current.board.getMoves(current);
         boolean hasValue = false;
         int currentNodeNumber = nodeNumber;
         int auxScore, score = 0;
-        podaLocal = poda;
+        Integer podaLocal = null;
 
         if (moves.size() == 0){
             this.lastScore = current.board.calculateScore(color);
+            current.board.score=-1000;
             DOT.append(nodeNumber).append(" ").append("[label=\"").append(current.board.score).append("\"]\n");
             return current.board.score;
         }
