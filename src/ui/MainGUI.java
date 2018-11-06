@@ -27,8 +27,6 @@ import javafx.scene.text.Text;
 
 public class MainGUI extends Application{
 	public Game game;
-	
-	//creo que no va a hacer falta tener una referencia a reversiboard porque ya hay una en game
 	public ReversiBoard reversiBoard;
 	
 	@Override
@@ -37,9 +35,19 @@ public class MainGUI extends Application{
         Parameters parameters = getParameters();
         List<String> rawArguments = parameters.getRaw();
         
-        this.game = new Game(Integer.valueOf(rawArguments.get(0)), Integer.valueOf(rawArguments.get(1)), 
-        		rawArguments.get(2).toString(), Integer.valueOf(rawArguments.get(3)), rawArguments.get(4).toString());
+        //if(rawArguments.size() == 5 && rawArguments.get(1) instanceof String) {
+        	this.game = new Game(Integer.valueOf(rawArguments.get(0)), 
+            		Integer.valueOf(rawArguments.get(1)), rawArguments.get(2).toString(), 
+            		Integer.valueOf(rawArguments.get(3)), rawArguments.get(4));	
+        //}
+        //else if(rawArguments.size() == 5){
+        	//this.game = new Game(Integer.valueOf(rawArguments.get(0)), rawArguments.get(1).toString(), 
+            	//	Integer.valueOf(rawArguments.get(2)), rawArguments.get(3).toString(), rawArguments.get(4).toString());	
+        //}
         
+        //else {
+        	//throw new IllegalArgumentException("Incorrect arguments.");
+        //}
         this.reversiBoard = new ReversiBoard();
     }
 	
@@ -52,6 +60,9 @@ public class MainGUI extends Application{
 		Parent scoreboard = reversiBoard.createScoreContent(game);
 		pane.setRight(scoreboard);
 		pane.setAlignment(scoreboard, Pos.BOTTOM_CENTER);
+		StackPane sp = new StackPane();
+		sp.getChildren().add(new Text(""));
+		pane.setTop(sp);;
 		primaryStage.setScene(new Scene(pane));
 		primaryStage.setTitle("WELCOME TO THE EDA RICEFIELDS REVERSI MADERFAKER");
 		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {

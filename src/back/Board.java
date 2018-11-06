@@ -1,10 +1,15 @@
 package back;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Board {
+public class Board implements Serializable{
 
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	private int[][] matrix4 = {{99,0,0,99},{0,1,1,0},{0,1,1,0},{99,0,0,99}};
 	private int[][] matrix6 = {{99,-4,4,4,-4,99},{-4,-12,-2,-2,-12,-4},{4,-2,1,1,-2,4},{4,-2,1,1,-2,4},{-4,-12,-2,-2,-12,-4},{99,-4,4,4,-4,99}};
 	private int[][] matrix8 = {{99,-8,8,6,6,8,-8,99},{-8,-24,-4,-3,-3,-4,-24,-8},{8,-4,7,4,4,7,-4,8},{6,-3,4,1,1,4,-3,6},{6,-3,4,1,1,4,-3,6},{8,-4,7,4,4,7,-4,8},{-8,-24,-4,-3,-3,-4,-24,-8},{99,-8,8,6,6,8,-8,99}};
