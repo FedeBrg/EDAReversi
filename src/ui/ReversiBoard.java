@@ -1,15 +1,17 @@
 package ui;
 import MinMax.*;
 
-
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import back.Board;
 import back.Game;
 import back.Player;
 import back.Game.UndoNode;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -17,9 +19,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -105,16 +110,19 @@ public class ReversiBoard {
 		ScoreTile whiteTile = new ScoreTile(2);
 		blackTile.refreshScore(game.p1);
 		whiteTile.refreshScore(game.p2);
+		blackTile.setAlignment(Pos.CENTER);
+		whiteTile.setAlignment(Pos.CENTER);
 		
-		blackTile.setTranslateX(-8);
-		whiteTile.setTranslateX(-8);
-		whiteTile.setTranslateY(50);
+//		blackTile.setTranslateX(-8);
+//		whiteTile.setTranslateX(-8);
+//		whiteTile.setTranslateY(50);
 		
 		scoreMatrix[0][0] = blackTile;
 		scoreMatrix[0][1] = whiteTile;
 		
 		scoreboard.getChildren().add(blackTile);
 		scoreboard.getChildren().add(whiteTile);
+		
 		scoreboard.setAlignment(Pos.CENTER);
 		return scoreboard;
 	}
@@ -148,8 +156,23 @@ public class ReversiBoard {
 			    		game.incrementPieces();
 			    		refreshScores(game, myMovement);
 			    		updateBoard(myMovement);
+			    		if(game.board.isBoardFull()) {
+			    			Alert alert = new Alert(AlertType.CONFIRMATION);
+				    		alert.setTitle("Game Ended - Woohoo!");
+				    		
+				    		int player = (game.p1.score > game.p2.score)? 1:2;
+				    		int pieces = (game.p1.score > game.p2.score)? game.p1.score : game.p2.score;
+				    		
+				    		alert.setContentText(String.format("Player %d has won with %d pieces!", player, pieces));
+				    		alert.setHeaderText("Finally!");
+				    		alert.showAndWait();
+				    		
+				    		Platform.exit();
+				    		System.exit(0);
+			    		}
 			    		
 			    		boolean hasMoves = game.board.hasAvailableMoves(game.current.colour);
+			    		System.out.println(hasMoves);
 			    		if(!hasMoves) {
 			    			game.switchPlayer();
 			    			if(game.ai != null) {
@@ -191,6 +214,7 @@ public class ReversiBoard {
 			    	int[][] myPosition = game.board.isValidMove(tile.row, tile.col, game.current.colour);
 			    	if(myPosition !=null) {
 						tile.border.setFill(Color.YELLOW);
+						tile.circle.setFill(Color.YELLOW);
 					}
 		    	}
 		}};
@@ -204,6 +228,7 @@ public class ReversiBoard {
 					
 			    	if(myPosition != null) {
 						tile.border.setFill(Color.GREEN);
+						tile.circle.setFill(Color.GREEN);
 					}
 		    	}
 		}};
@@ -241,7 +266,9 @@ public class ReversiBoard {
 		Button nextButton = new Button("Next Move");
 		EventHandler<MouseEvent> nextHandler = new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent arg0) {
-				if(!game.board.hasAvailableMoves(game.current.colour)) {
+				boolean hasMoves = game.board.hasAvailableMoves(game.current.colour);
+				System.out.println(hasMoves);
+				if(!hasMoves) {
 					if(game.ai != null) {
 		    			int[][] aiBoard = game.computerTurn(game);
 		    			
@@ -277,7 +304,7 @@ public class ReversiBoard {
 			public void handle(MouseEvent arg0) {
 				if(!game.gameHasStarted) {
 					game.startGame();
-					if(game.ai != null && game.p1.colour == game.ai.getColor()) {
+					if(game.ai != null && game.p1.colour == game.ai.color) {
 						int[][] aiBoard = game.computerTurn(game);
 						if(aiBoard != null) {
 							game.pushToStack(game.board.getBoard());
@@ -292,10 +319,42 @@ public class ReversiBoard {
 		};
 		startButton.setOnMouseClicked(startHandler);
 		
+		Button saveButton = new Button("Save");
+		
+		EventHandler<MouseEvent> saveHandler = new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent arg0) {
+				try {
+					TextInputDialog tid = new TextInputDialog("Savegame");
+					tid.setTitle("Time to save your game!");
+					tid.setHeaderText("Savegame");
+					tid.setContentText("Enter filename");
+					Optional<String> result = tid.showAndWait();
+					
+					if(result != null) {
+						game.writeObject(game, result.get());
+						Alert alert = new Alert(AlertType.CONFIRMATION);
+			    		alert.setTitle("Game Saved - Woohoo!");
+			    		
+			    		alert.setContentText(String.format("Yay!"));
+			    		alert.setHeaderText("Finally this great game is saved!");
+			    		alert.showAndWait();
+					}
+					
+				} catch (IOException e) {
+					e.printStackTrace();
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Can't save game !");
+					alert.setContentText("All our operators are currently busy. Please try again later");
+					alert.showAndWait();
+				}
+			}
+		};
+		saveButton.setOnMouseClicked(saveHandler);
+		
 		VBox sp = new VBox();
 		sp.setAlignment(Pos.TOP_CENTER);
 		sp.setSpacing(15);
-		sp.getChildren().addAll(startButton, undoButton, nextButton);
+		sp.getChildren().addAll(startButton, saveButton, undoButton, nextButton);
 		
 		return sp;
 	}
