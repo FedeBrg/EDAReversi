@@ -1,10 +1,15 @@
 package back;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Board {
+public class Board implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int[][] matrix4 = {{99,0,0,99},{0,1,1,0},{0,1,1,0},{99,0,0,99}};
 	private int[][] matrix6 = {{99,-4,4,4,-4,99},{-4,-12,-2,-2,-12,-4},{4,-2,1,1,-2,4},{4,-2,1,1,-2,4},{-4,-12,-2,-2,-12,-4},{99,-4,4,4,-4,99}};
 	private int[][] matrix8 = {{99,-8,8,6,6,8,-8,99},{-8,-24,-4,-3,-3,-4,-24,-8},{8,-4,7,4,4,7,-4,8},{6,-3,4,1,1,4,-3,6},{6,-3,4,1,1,4,-3,6},{8,-4,7,4,4,7,-4,8},{-8,-24,-4,-3,-3,-4,-24,-8},{99,-8,8,6,6,8,-8,99}};
@@ -103,7 +108,6 @@ public class Board {
 				}
 			}
 		}
-	
 
 		return ret;
 	}
@@ -217,24 +221,19 @@ public class Board {
     public int calculateScore(int current){
 		score=0;
 		int i,j;
-		int myPoints=0;
 		int[][] board=matrix;
 		for(i=0;i<this.size;i++) {
 			for (j = 0; j < this.size; j++) {
 				if(current==board[i][j]){
 					this.score+=valueMatrix[i][j];
-					myPoints+=1;
 				}
-				else if(board[i][j]!=current && board[i][j]!=0 ){
-					this. score-=valueMatrix[i][j];
-					this.score-=1;
+				else if(board[i][j]!=current &&(board[i][j]==1 || board[i][j]==2 )){
+					score-=valueMatrix[i][j];
 				}
 
 			}
 		}
-		if(myPoints==0)
-			return this.score-=1000;
-		return this.score+=myPoints;
+		return this.score;
 	}
 	public int getScore(){return score;}
 }
