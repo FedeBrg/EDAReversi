@@ -219,32 +219,41 @@ public class Board implements Serializable{
     	return counter;
     }
 
-    public int calculateScore(Game game){
+    public int calculateScore(Game game,int color){
 		score=0;
-		getMoves(game);
-		int current=game.getCurrent();
+		List<int[][]>moves=this.getMoves(game);
 		int i,j;
 		int myPoints=0,theirPoints=0;
 		int[][] board=matrix;
 		for(i=0;i<this.size;i++) {
 			for (j = 0; j < this.size; j++) {
-				if(current==board[i][j]){
+				if(color==board[i][j]){
 					this.score+=valueMatrix[i][j];
-					myPoints+=3;
+					myPoints+=1;
 				}
-				else if(board[i][j]!=current && board[i][j]!=0 ){
+				else if(color!=board[i][j] && board[i][j]!=0 ){
 					this. score-=valueMatrix[i][j];
-					theirPoints-=3;
+					theirPoints-=1;
 				}
 
 			}
 		}
+		if(game.getCurrent()==color)
+			score+=moves.size();
+		else {
+			score-=moves.size();
+		}
+		if(moves.size()==0 )
+			return (color==game.getCurrent())?1000:-1000;
+		if(isBoardFull() && myPoints>theirPoints)
+			return 10000;
 		if(theirPoints==0)
-			return this.score+=1000;
+			return this.score=10000;
 		if(myPoints==0)
-			return this.score-=1000;
-		return this.score+=myPoints+theirPoints;
+			return this.score=10000;
+		return this.score;
 	}
 	public int getScore(){return score;}
 }
+
 

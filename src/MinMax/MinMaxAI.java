@@ -7,15 +7,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-public class MinMaxAI {
+public class MinMaxAI implements Serializable {
+    private static final long serialVersionAUID=1L;
     public int color;
-    int nodeNumber;
-    int lastScore;
+    int nodeNumber,lastScore,chosenNode,lastNode;
 
     public MinMaxAI(int color) {
         this.color = color;
@@ -23,7 +24,7 @@ public class MinMaxAI {
 
     public int[][] makeMove(Game game) {
         List<int[][]> moves = game.board.getMoves(game);
-        int[][] toRet = minMax(moves, 6, game);
+        int[][] toRet = minMax(moves, 4, game);
         game.board.setBoard(toRet);
         return toRet;
     }
@@ -39,7 +40,7 @@ public class MinMaxAI {
         this.nodeNumber = 0;
         long time=System.nanoTime();
         Integer poda=null;
-        Boolean podas=false;
+        Boolean podas=true;
         int maxTime=3;
         int currentNodeNumber = 0,score = 0, auxScore;
         for (int[][] move : moves) {
@@ -91,7 +92,7 @@ public class MinMaxAI {
         DOT.append(nodeNumber).append("\n");    //meconecte al anterior
         //CASOS BASE
         if (depth == 0) {
-            this.lastScore = current.board.calculateScore(game);
+            this.lastScore = current.board.calculateScore(current,color);
             DOT.append(nodeNumber).append(" ").append("[label=\"").append(current.board.score).append("\"]\n");
             return current.board.score;
         }
@@ -102,14 +103,18 @@ public class MinMaxAI {
         boolean hasValue = false;
         int currentNodeNumber = nodeNumber;
         int auxScore, score = 0;
-        Integer podaLocal = null;
+        Integer podaLocal = poda;
 
+        if(!myTurn)
+            DOT.append(nodeNumber).append("[shape=box]\n");
         if (moves.size() == 0){
-            this.lastScore = current.board.calculateScore(game);
-            current.board.score=-1000;
+            this.lastScore = current.board.calculateScore(current,color);
             DOT.append(nodeNumber).append(" ").append("[label=\"").append(current.board.score).append("\"]\n");
+            this.lastNode=currentNodeNumber;
             return current.board.score;
         }
+
+
         for (int[][] move : moves) {
             DOT.append(currentNodeNumber).append("--"); //me conecto a
 
