@@ -91,7 +91,7 @@ public class MinMaxAI {
         DOT.append(nodeNumber).append("\n");    //meconecte al anterior
         //CASOS BASE
         if (depth == 0) {
-            this.lastScore = current.board.calculateScore(color);
+            this.lastScore = current.board.calculateScore(game);
             DOT.append(nodeNumber).append(" ").append("[label=\"").append(current.board.score).append("\"]\n");
             return current.board.score;
         }
@@ -105,7 +105,7 @@ public class MinMaxAI {
         Integer podaLocal = null;
 
         if (moves.size() == 0){
-            this.lastScore = current.board.calculateScore(color);
+            this.lastScore = current.board.calculateScore(game);
             current.board.score=-1000;
             DOT.append(nodeNumber).append(" ").append("[label=\"").append(current.board.score).append("\"]\n");
             return current.board.score;

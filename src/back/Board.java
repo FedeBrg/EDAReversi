@@ -214,27 +214,31 @@ public class Board {
     	return counter;
     }
 
-    public int calculateScore(int current){
+    public int calculateScore(Game game){
 		score=0;
+		getMoves(game);
+		int current=game.getCurrent();
 		int i,j;
-		int myPoints=0;
+		int myPoints=0,theirPoints=0;
 		int[][] board=matrix;
 		for(i=0;i<this.size;i++) {
 			for (j = 0; j < this.size; j++) {
 				if(current==board[i][j]){
 					this.score+=valueMatrix[i][j];
-					myPoints+=1;
+					myPoints+=3;
 				}
 				else if(board[i][j]!=current && board[i][j]!=0 ){
 					this. score-=valueMatrix[i][j];
-					this.score-=1;
+					theirPoints-=3;
 				}
 
 			}
 		}
+		if(theirPoints==0)
+			return this.score+=1000;
 		if(myPoints==0)
 			return this.score-=1000;
-		return this.score+=myPoints;
+		return this.score+=myPoints+theirPoints;
 	}
 	public int getScore(){return score;}
 }
