@@ -23,7 +23,7 @@ public class MinMaxAI {
 
     public int[][] makeMove(Game game) {
         List<int[][]> moves = game.board.getMoves(game);
-        int[][] toRet = minMax(moves, 7, game);
+        int[][] toRet = minMax(moves, 6, game);
         game.board.setBoard(toRet);
         return toRet;
     }

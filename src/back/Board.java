@@ -98,7 +98,8 @@ public class Board {
 		for(int row = 0; row < size &&!ret; row++) {
 			for(int col = 0 ; col < size && !ret; col ++) {
 				for(int i = 0; i<directions.length && !ret;i++) {
-					ret = ret || isValidMove(row+directions[i][0],col+directions[i][1],directions[i][0],directions[i][1],colour, true,copy);
+					if(matrix[row][col]==0)
+						ret = ret || isValidMove(row+directions[i][0],col+directions[i][1],directions[i][0],directions[i][1],colour, true,copy);
 				}
 			}
 		}
