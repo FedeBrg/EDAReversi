@@ -27,12 +27,12 @@ public class MinMaxAI {
         game.board.setBoard(toRet);
         return toRet;
     }
-//(game.useTime())?"tine":"depth"
+
     public int[][] minMax(List<int[][]> moves, int depth, Game game) {
         Board board;
         board = new Board(game.board.getSize());
         Boolean myTurn = true;
-        Game current = new Game(game.board.getSize(), game.getWhoStart(),game.getAiType() , game.getLimit(), (game.getPodas()) ? "on" : "off");
+        Game current = new Game(game.board.getSize(), game.getWhoStart(),(game.useTime())?"tine":"depth", game.getLimit(), (game.getPodas()) ? "on" : "off");
         current.switchPlayer();
         boolean hasValue = false;
         StringBuilder DOT = new StringBuilder("graph ARBOL{\n"); //inicializo el DOT
