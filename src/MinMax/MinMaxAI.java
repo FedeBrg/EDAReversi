@@ -3,20 +3,17 @@ package MinMax;
 import back.Board;
 import back.Game;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.io.Serializable;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class MinMaxAI implements Serializable {
     private static final long serialVersionAUID=1L;
     public int color;
-    int nodeNumber,lastScore,chosenNode,lastNode;
+    int nodeNumber,lastScore,lastNode;
+    private static final long NANO=1000000000;
 
     public MinMaxAI(int color) {
         this.color = color;
@@ -24,44 +21,113 @@ public class MinMaxAI implements Serializable {
 
     public int[][] makeMove(Game game) {
         List<int[][]> moves = game.board.getMoves(game);
-        int[][] toRet = minMax(moves, 3, game);
+        int[][] toRet;
+        if(!game.useTime())
+            toRet = minMaxDepth(moves, game);
+        else{
+            toRet = minMaxTime(moves,game);
+        }
         game.board.setBoard(toRet);
         return toRet;
     }
 
-    public int[][] minMax(List<int[][]> moves, int depth, Game game) {
+
+    private int[][] minMaxTime(List<int[][]> moves, Game game) {
         Board board;
         board = new Board(game.board.getSize());
-        Boolean myTurn = true;
-        Game current = new Game(game.board.getSize(), game.getWhoStart(),(game.useTime())?"tine":"depth", game.getLimit(), (game.getPodas()) ? "on" : "off");
+
+        Game current = new Game(game.board.getSize(), game.getWhoStart(), (game.useTime()) ? "time" : "depth", game.getLimit(), (game.getPodas()) ? "on" : "off");
         current.switchPlayer();
-        boolean hasValue = false;
+
+        StringBuilder DOT =new StringBuilder(); //inicializo el DOT
+
+        this.nodeNumber = 0;
+        long time = System.nanoTime();
+        Integer poda = null;
+        int maxTime, currentNodeNumber = 0, score = 0, auxScore;
+        maxTime = game.getLimit();
+        boolean podas = game.getPodas(), hasValue = false, myTurn = true,outOfTime=false;
+
+        for (int depth = 3;!outOfTime && (( System.nanoTime()-time) / NANO <= maxTime); depth += 2) {
+            DOT=new StringBuilder("graph ARBOL{\n");
+            System.out.print("Checking level ");
+            System.out.println(depth);
+            for (int[][] move : moves) {
+                DOT.append(currentNodeNumber).append("--"); //se conecta a
+
+                nodeNumber += 1;
+
+                auxScore = minMaxRec(move, depth - 1, !myTurn, current, DOT, poda, podas, maxTime, time);
+                if((System.nanoTime()-time)/NANO >= maxTime){
+                    System.out.println("Failed, no more time");
+                    outOfTime=true;
+                    break;
+                }
+                if (!hasValue) {
+                    board.setBoard(move);
+                    score = auxScore;
+                    hasValue = true;
+                    poda = score;
+
+                } else if (auxScore > score) {
+                    board.setBoard(move);
+                    score = auxScore;
+                    poda = score;
+                }
+
+                DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(score).append("\"]\n").append("\n").append("}");
+            }
+            if(!outOfTime){
+                System.out.println("Completed level: "+depth);
+                System.out.println("Time:"+(System.nanoTime()-time)/NANO+"."+(System.nanoTime()-time)%NANO/1000000);
+            }
+
+        }
+
+
+        StringSelection selection = new StringSelection(DOT.toString());
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(selection, selection);
+
+        time=(System.nanoTime()-time);
+        System.out.println(score);
+        System.out.println(time/NANO+"."+time%NANO/1000000);
+
+        return board.getBoard();
+    }
+
+
+    private int[][] minMaxDepth(List<int[][]> moves, Game game) {
+        Board board;
+        board = new Board(game.board.getSize());
+        Game current = new Game(game.board.getSize(), game.getWhoStart(),(game.useTime())?"time":"depth", game.getLimit(), (game.getPodas()) ? "on" : "off");
+        current.switchPlayer();
         StringBuilder DOT = new StringBuilder("graph ARBOL{\n"); //inicializo el DOT
         this.nodeNumber = 0;
         long time=System.nanoTime();
         Integer poda=null;
-        Boolean podas=true;
-        int maxTime=3;
-        int currentNodeNumber = 0,score = 0, auxScore;
-        for (int[][] move : moves) {
-            DOT.append(currentNodeNumber).append("--"); //se conecta a
+        int depth,currentNodeNumber = 0,score = 0, auxScore;
+        depth=game.getLimit();
+        boolean podas=game.getPodas(),hasValue = false,myTurn = true;
+            for (int[][] move : moves) {
+                DOT.append(currentNodeNumber).append("--"); //se conecta a
 
-            nodeNumber += 1;
+                nodeNumber += 1;
 
-            auxScore = minMaxRec(move, depth - 1, !myTurn, current, DOT, poda,podas,maxTime,time);
-            if (!hasValue) {
-                board.setBoard(move);
-                score = auxScore;
-                hasValue = true;
-                poda=score;
+                auxScore = minMaxRec(move, depth - 1, !myTurn, current, DOT, poda, podas, -1, time);
+                if (!hasValue) {
+                    board.setBoard(move);
+                    score = auxScore;
+                    hasValue = true;
+                    poda = score;
 
-            } else if (auxScore > score) {
-                board.setBoard(move);
-                score = auxScore;
-                poda=score;
+                } else if (auxScore > score) {
+                    board.setBoard(move);
+                    score = auxScore;
+                    poda = score;
+                }
+
             }
-
-        }
         DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(score).append("\"]\n");
 
         DOT.append("\n").append("}");
@@ -70,26 +136,15 @@ public class MinMaxAI implements Serializable {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(selection, selection);
         time=(System.nanoTime()-time);
-        System.out.println(score);
-        System.out.println(time/1000000000+"."+time%1000000000/1000000);
-//        long second=1000000000;
-//        while(System.nanoTime()-time>second){
-//            System.out.println("entro");
-//            try{
-//            Thread.sleep(1);
-//            }catch (java.lang.InterruptedException exception){
-//
-//            }
-//
-//        }
-//        System.out.println(time/1000000000+"."+time%1000000000/1000000);
+        System.out.println("The score was:" + score);
+        System.out.println("Total time was" + time/NANO+"."+time%NANO/1000000);
         return board.getBoard();
     }
 
-    int minMaxRec(int[][] lastMove, int depth, Boolean myTurn, Game game, StringBuilder DOT, Integer poda,boolean podas,int maxTime,long startTime) {
+    private int minMaxRec(int[][] lastMove, int depth, Boolean myTurn, Game game, StringBuilder DOT, Integer poda,boolean podas,int maxTime,long startTime) {
         Game current = game;
         current.board.setBoard(lastMove);
-        DOT.append(nodeNumber).append("\n");    //meconecte al anterior
+        DOT.append(nodeNumber).append("\n");    //me conecte al anterior
         //CASOS BASE
         if (depth == 0) {
             this.lastScore = current.board.calculateScore(current,color);
@@ -98,6 +153,9 @@ public class MinMaxAI implements Serializable {
         }
 
         current.switchPlayer();
+        if((startTime!=(-1) && ((System.nanoTime()-startTime)/NANO)>=maxTime))
+            return 0;
+
 
         List<int[][]> moves = current.board.getMoves(current);
         boolean hasValue = false;
@@ -122,8 +180,10 @@ public class MinMaxAI implements Serializable {
 
             auxScore = minMaxRec(move, depth - 1, !myTurn, current, DOT, podaLocal,podas,maxTime,startTime);
 
-            if((startTime!=(-1) && ((System.nanoTime()-startTime)/1000000000)==maxTime))
+            if((startTime!=(-1) && ((System.nanoTime()-startTime)/NANO)>=maxTime)){
                 return score;
+            }
+
             if (!hasValue) {
                 hasValue = true;
                 score = auxScore;
