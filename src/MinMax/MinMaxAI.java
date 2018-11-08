@@ -24,7 +24,7 @@ public class MinMaxAI implements Serializable {
 
     public int[][] makeMove(Game game) {
         List<int[][]> moves = game.board.getMoves(game);
-        int[][] toRet = minMax(moves, 4, game);
+        int[][] toRet = minMax(moves, 3, game);
         game.board.setBoard(toRet);
         return toRet;
     }

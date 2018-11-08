@@ -175,7 +175,8 @@ public class ReversiBoard {
 			    		System.out.println(hasMoves);
 			    		if(!hasMoves) {
 			    			game.switchPlayer();
-			    			if(game.ai != null) {
+
+			    			/*if(game.ai != null) {
 			    				int[][] aiBoard = game.computerTurn(game);
 				    			
 				    			if(aiBoard != null) {
@@ -186,7 +187,7 @@ public class ReversiBoard {
 						    		updateBoard(aiBoard);
 				    			}
 				    			game.switchPlayer();
-			    			}
+			    			}*/
 			    		}
 			    		
 			    		else if(game.ai != null) {
@@ -269,24 +270,27 @@ public class ReversiBoard {
 				boolean hasMoves = game.board.hasAvailableMoves(game.current.colour);
 				System.out.println(hasMoves);
 				if(!hasMoves) {
-					if(game.ai != null) {
-		    			int[][] aiBoard = game.computerTurn(game);
-		    			
-		    			if(aiBoard != null) {
-		    				game.switchPlayer();
-		    				game.pushToStack(game.board.getBoard());
-				    		game.board.setBoard(aiBoard);
-				    		game.incrementPieces();
-				    		refreshScores(game, aiBoard);
-				    		updateBoard(aiBoard);
-		    			}
-		    		
-		    			game.switchPlayer();
-		    		}
-					
-					else {
-						game.switchPlayer();
+					if(!game.board.isBoardFull()){
+						if(game.ai != null) {
+							int[][] aiBoard = game.computerTurn(game);
+
+							if(aiBoard != null) {
+								game.switchPlayer();
+								game.pushToStack(game.board.getBoard());
+								game.board.setBoard(aiBoard);
+								game.incrementPieces();
+								refreshScores(game, aiBoard);
+								updateBoard(aiBoard);
+							}
+
+							game.switchPlayer();
+						}
+
+						else {
+							game.switchPlayer();
+						}
 					}
+
 				}
 				
 				else {
