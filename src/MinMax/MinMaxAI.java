@@ -10,15 +10,20 @@ import java.io.Serializable;
 import java.util.List;
 
 public class MinMaxAI implements Serializable {
-    private static final long serialVersionAUID=1L;
-    public int color;
+//  ---------- INSTANCE VARIABLES ---------- //
+	private static final long serialVersionUID = 1L;
+	private static final long NANO=1000000000;
+	public int color;
     int nodeNumber,lastScore,lastNode;
-    private static final long NANO=1000000000;
-
+//  ---------- END OF INSTANCE VARIABLES ---------- //
+    
+//  ---------- CLASS CONSTRUCTOR ---------- //
     public MinMaxAI(int color) {
         this.color = color;
     }
+//  ---------- END OF CLASS CONSTRUCTOR ---------- //
 
+//  ---------- AUXILIAR METHODS ---------- //
     public int[][] makeMove(Game game) {
         List<int[][]> moves = game.board.getMoves(game);
         int[][] toRet;
@@ -27,7 +32,7 @@ public class MinMaxAI implements Serializable {
         else{
             toRet = minMaxTime(moves,game);
         }
-        game.board.setBoard(toRet);
+
         return toRet;
     }
 
@@ -36,7 +41,7 @@ public class MinMaxAI implements Serializable {
         Board board;
         board = new Board(game.board.getSize());
 
-        Game current = new Game(game.board.getSize(), game.getWhoStart(), (game.useTime()) ? "time" : "depth", game.getLimit(), (game.getPodas()) ? "on" : "off");
+        Game current = new Game(game.board.getSize(), game.getWhoStart(), (game.useTime()) ? "time" : "depth", game.getLimit(), (game.getPrune()) ? "on" : "off");
         current.switchPlayer();
 
         StringBuilder DOT =new StringBuilder(); //inicializo el DOT
@@ -46,20 +51,20 @@ public class MinMaxAI implements Serializable {
         Integer poda = null;
         int maxTime, currentNodeNumber = 0, score = 0, auxScore;
         maxTime = game.getLimit();
-        boolean podas = game.getPodas(), hasValue = false, myTurn = true,outOfTime=false;
+        boolean prune = game.getPrune(), hasValue = false, myTurn = true,outOfTime=false;
 
         for (int depth = 3;!outOfTime && (( System.nanoTime()-time) / NANO <= maxTime); depth += 2) {
             DOT=new StringBuilder("graph ARBOL{\n");
-            System.out.print("Checking level ");
-            System.out.println(depth);
+            //System.out.print("Checking level ");
+            //System.out.println(depth);
             for (int[][] move : moves) {
                 DOT.append(currentNodeNumber).append("--"); //se conecta a
 
                 nodeNumber += 1;
 
-                auxScore = minMaxRec(move, depth - 1, !myTurn, current, DOT, poda, podas, maxTime, time);
+                auxScore = minMaxRec(move, depth - 1, !myTurn, current, DOT, poda, prune, maxTime, time);
                 if((System.nanoTime()-time)/NANO >= maxTime){
-                    System.out.println("Failed, no more time");
+                    //System.out.println("Failed, no more time");
                     outOfTime=true;
                     break;
                 }
@@ -78,8 +83,8 @@ public class MinMaxAI implements Serializable {
                 DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(score).append("\"]\n").append("\n").append("}");
             }
             if(!outOfTime){
-                System.out.println("Completed level: "+depth);
-                System.out.println("Time:"+(System.nanoTime()-time)/NANO+"."+(System.nanoTime()-time)%NANO/1000000);
+                //System.out.println("Completed level: "+depth);
+                //System.out.println("Time:"+(System.nanoTime()-time)/NANO+"."+(System.nanoTime()-time)%NANO/1000000);
             }
 
         }
@@ -90,8 +95,8 @@ public class MinMaxAI implements Serializable {
         clipboard.setContents(selection, selection);
 
         time=(System.nanoTime()-time);
-        System.out.println(score);
-        System.out.println(time/NANO+"."+time%NANO/1000000);
+        //System.out.println(score);
+        //System.out.println(time/NANO+"."+time%NANO/1000000);
 
         return board.getBoard();
     }
@@ -100,7 +105,7 @@ public class MinMaxAI implements Serializable {
     private int[][] minMaxDepth(List<int[][]> moves, Game game) {
         Board board;
         board = new Board(game.board.getSize());
-        Game current = new Game(game.board.getSize(), game.getWhoStart(),(game.useTime())?"time":"depth", game.getLimit(), (game.getPodas()) ? "on" : "off");
+        Game current = new Game(game.board.getSize(), game.getWhoStart(),(game.useTime())?"time":"depth", game.getLimit(), (game.getPrune()) ? "on" : "off");
         current.switchPlayer();
         StringBuilder DOT = new StringBuilder("graph ARBOL{\n"); //inicializo el DOT
         this.nodeNumber = 0;
@@ -108,13 +113,13 @@ public class MinMaxAI implements Serializable {
         Integer poda=null;
         int depth,currentNodeNumber = 0,score = 0, auxScore;
         depth=game.getLimit();
-        boolean podas=game.getPodas(),hasValue = false,myTurn = true;
+        boolean prune=game.getPrune(),hasValue = false,myTurn = true;
             for (int[][] move : moves) {
                 DOT.append(currentNodeNumber).append("--"); //se conecta a
 
                 nodeNumber += 1;
 
-                auxScore = minMaxRec(move, depth - 1, !myTurn, current, DOT, poda, podas, -1, time);
+                auxScore = minMaxRec(move, depth - 1, !myTurn, current, DOT, poda, prune, -1, time);
                 if (!hasValue) {
                     board.setBoard(move);
                     score = auxScore;
@@ -136,13 +141,13 @@ public class MinMaxAI implements Serializable {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(selection, selection);
         time=(System.nanoTime()-time);
-        System.out.println("The score was:" + score);
-        System.out.println("Total time was" + time/NANO+"."+time%NANO/1000000);
+        //System.out.println("The score was:" + score);
+        //System.out.println("Total time was" + time/NANO+"."+time%NANO/1000000);
         return board.getBoard();
     }
 
-    private int minMaxRec(int[][] lastMove, int depth, Boolean myTurn, Game game, StringBuilder DOT, Integer poda,boolean podas,int maxTime,long startTime) {
-        Game current = game;
+    private int minMaxRec(int[][] lastMove, int depth, Boolean myTurn, Game game, StringBuilder DOT, Integer poda,boolean prune,int maxTime,long startTime) {
+        Game current = new Game(game.board.getSize(), game.getWhoStart(),(game.useTime())?"time":"depth", game.getLimit(), (game.getPrune()) ? "on" : "off");
         current.board.setBoard(lastMove);
         DOT.append(nodeNumber).append("\n");    //me conecte al anterior
         //CASOS BASE
@@ -153,7 +158,7 @@ public class MinMaxAI implements Serializable {
         }
 
         current.switchPlayer();
-        if((startTime!=(-1) && ((System.nanoTime()-startTime)/NANO)>=maxTime))
+        if((maxTime!=(-1) && ((System.nanoTime()-startTime)/NANO)>=maxTime))
             return 0;
 
 
@@ -178,9 +183,9 @@ public class MinMaxAI implements Serializable {
 
             nodeNumber += 1;
 
-            auxScore = minMaxRec(move, depth - 1, !myTurn, current, DOT, podaLocal,podas,maxTime,startTime);
+            auxScore = minMaxRec(move, depth - 1, !myTurn, current, DOT, podaLocal,prune,maxTime,startTime);
 
-            if((startTime!=(-1) && ((System.nanoTime()-startTime)/NANO)>=maxTime)){
+            if((maxTime!=(-1) && ((System.nanoTime()-startTime)/NANO)>=maxTime)){
                 return score;
             }
 
@@ -188,7 +193,7 @@ public class MinMaxAI implements Serializable {
                 hasValue = true;
                 score = auxScore;
                 podaLocal = score;
-                if (podas && poda != null) {
+                if (prune && poda != null) {
                     if (!myTurn && score <= poda) {
                         DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(auxScore).append("\"]\n");
                         return score;
@@ -203,14 +208,14 @@ public class MinMaxAI implements Serializable {
                 if (myTurn && auxScore > score) {
                     score = auxScore;
                     podaLocal = score;
-                    if (podas && poda != null && score <= poda) {
+                    if (prune && poda != null && score <= poda) {
                         DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(auxScore).append("\"]\n");
                         return score;
                     }
                 } else if (!myTurn && auxScore < score) {
                     score = auxScore;
                     podaLocal = score;
-                    if (podas && poda != null && score >= poda) {
+                    if (prune && poda != null && score >= poda) {
                         DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(auxScore).append("\"]\n");
                         return score;
                     }
@@ -225,4 +230,5 @@ public class MinMaxAI implements Serializable {
     public int getColor() {
         return color;
     }
+//  ---------- END OF AUXILIAR METHODS ---------- //
 }

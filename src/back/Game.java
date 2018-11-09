@@ -1,7 +1,6 @@
 package back;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -13,28 +12,24 @@ import java.util.LinkedList;
 import MinMax.MinMaxAI;
 
 public class Game implements Serializable{
-		/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+//  ---------- INSTANCE VARIABLES ---------- //
 		public Player p1;
 		public Player p2;
-		
 		public Board board;
-		public Deque<UndoNode> undoStack;
-		public Player current;
-		public boolean podas;
+		public MinMaxAI ai;
+		private static final long serialVersionUID = 1L;
+		private Deque<UndoNode> undoStack;
+		private Player current;
+		private boolean prune;
 		private boolean aiType; // aiType = true if aiType = "time"
 		private int limit;
-		public int totalPieces = 4;
-		public MinMaxAI ai;
-		public boolean gameHasStarted;
+		private int totalPieces = 4;
+		private boolean gameHasStarted;
 		private int whoStart;
-
+//  ---------- END OF INSTANCE VARIABLES ---------- //
+		
+//  ---------- AUXILIAR CLASS ---------- //
 		public class UndoNode implements Serializable {
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = 1L;
 			int[][] board;
 			Player current;
@@ -46,25 +41,30 @@ public class Game implements Serializable{
 				this.totalPieces = totalPieces;
 			}
 		}
+//  ---------- END OF AUXILIAR CLASS ---------- //
 		
-		public void incrementPieces() {
-			this.totalPieces += 1;
-		}
-		
-		public int calculateP1Score(int[][] matrix) {
-			int p1Score = 0;
+//  ---------- CLASS CONSTRUCTORS ---------- //
+		public Game(int size, int whoStart, String aiType, int limit, String podas){
+			this.p1 = new Player(1);
+			this.p2 = new Player(2);
+			this.current = p1;
+			this.board = new Board(size);
+			this.undoStack = new LinkedList<UndoNode>();
+			this.limit = limit;
+			this.gameHasStarted = false;
+			this.whoStart = whoStart;
 			
-			for(int i = 0; i < board.getSize(); i++) {
-				for(int j = 0; j < board.getSize(); j++) {
-					if(matrix[i][j] == 1) {
-						p1Score += 1;
-					}
-				}
-			}
-
-			return p1Score;
+			setPodas(podas);
+			setAiType(aiType);
+			setWhoStart(whoStart);
 		}
 		
+		public Game(int whoStart, String aiType, int limit, String podas, String filename) throws ClassNotFoundException, IOException {
+			readObject(this, filename, whoStart, aiType, limit, podas);
+		}
+//  ---------- END OF CLASS CONSTRUCTORS ---------- //	
+		
+//  ---------- SERIALIZATION METHODS ---------- //
 		public final void writeObject(Game game, String str) throws IOException {
 			FileOutputStream fileOut = new FileOutputStream(str);
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -81,6 +81,7 @@ public class Game implements Serializable{
 			fileOut.close();		
 		}
 		
+		@SuppressWarnings("unchecked")
 		public final void readObject(Game game, String filename, int whoStart, String aiType, int limit, String podas) {
 		      try {
 		    	  	FileInputStream fileInputStream = new FileInputStream(filename);
@@ -97,7 +98,6 @@ public class Game implements Serializable{
 					
 					game.p1 = player1;
 					game.p2 = player2;
-					game.setWhoStart(whoStart);
 					game.setLimit(limit);
 					game.setPodas(podas);
 					game.setAiType(aiType);
@@ -106,6 +106,7 @@ public class Game implements Serializable{
 					game.current = current;
 					game.totalPieces = pieces;
 					game.gameHasStarted = gameHasStarted;
+					game.setWhoStart(whoStart);
 					objectInputStream.close();
 		      } catch (IOException i) {
 		         return;
@@ -113,49 +114,66 @@ public class Game implements Serializable{
 		         return;
 		      }
 		}
+//  ---------- END OF SERIALIZATION METHODS ---------- //
 		
-		public void pushToStack(int[][] matrix) {
-			this.undoStack.push(new UndoNode(matrix, this.current, this.totalPieces));
+//  ---------- AUXILIAR FUNCTIONS ---------- //
+		public void incrementPieces() {
+			this.totalPieces += 1;
+		}
+		
+		public int getPieces() {
+			return totalPieces;
+		}
+		
+		public int calculateP1Score(int[][] matrix) {
+			int p1Score = 0;
+			
+			for(int i = 0; i < board.getSize(); i++) {
+				for(int j = 0; j < board.getSize(); j++) {
+					if(matrix[i][j] == 1) {
+						p1Score += 1;
+					}
+				}
+			}
+
+			return p1Score;
 		}
 		
 		public void startGame() {
 			this.gameHasStarted = true;
 		}
 		
+		public void pushToStack(int[][] matrix) {
+			this.undoStack.push(new UndoNode(matrix, this.current, this.totalPieces));
+		}
+		
 		public void undo() {
 			if(undoStack.isEmpty()) {
 				return;
 			}
-			
+
 			UndoNode toReplace = undoStack.pop();
 			
-			if(ai != null) {
-				while(toReplace.current != current) {
-					if(undoStack.isEmpty()) {
-						this.board.setBoard(toReplace.board);
-						this.current = toReplace.current;
-						this.totalPieces = toReplace.totalPieces;
-						return;
-					}
-					
-					toReplace = undoStack.pop();
+			while(toReplace.current != this.current) {
+				if(undoStack.isEmpty()) {
+					this.board.getMatrix(board.getSize());
+					this.totalPieces = 4;
+					this.current = p1;
 				}
 				
-				this.board.setBoard(toReplace.board);
-				this.current = toReplace.current;
-				this.totalPieces = toReplace.totalPieces;
+				else {
+					toReplace = undoStack.pop();
+				}
 			}
 			
-			else {
-				this.board.setBoard(toReplace.board);
-				this.current = toReplace.current;
-				this.totalPieces = toReplace.totalPieces;
-			}	
-		}
+			this.board.setBoard(toReplace.board);
+			this.totalPieces = toReplace.totalPieces;
+			this.current = toReplace.current;
+		}	
 		
 		public void printboard(int[][] b) {
-			for(int i = 0; i < 8; i++) {
-				for(int j = 0; j < 8; j++) {
+			for(int i = 0; i < board.getSize(); i++) {
+				for(int j = 0; j < board.getSize(); j++) {
 					System.out.print(b[i][j]);
 				}
 				System.out.println("\n");
@@ -163,28 +181,10 @@ public class Game implements Serializable{
 		}
 		
 		
-		public Game(int size, int whoStart, String aiType, int limit, String podas){
-			
-			this.p1 = new Player(1);
-			this.p2 = new Player(2);
-			this.current = p1;
-			this.board = new Board(size);
-			this.undoStack = new LinkedList<UndoNode>();
-			this.limit = limit;
-			this.gameHasStarted = false;
-			this.whoStart = whoStart;
-			
-			setPodas(podas);
-			setAiType(aiType);
-			setWhoStart(whoStart);
-		}
+		
 		
 		public void setPodas(String podas) {
-			this.podas = (podas.equals("on"))? true:false;
-		}
-		
-		public Game(int whoStart, String aiType, int limit, String podas, String filename) throws ClassNotFoundException, IOException {
-			readObject(this, filename, whoStart, aiType, limit, podas);
+			this.prune = (podas.equals("on"))? true:false;
 		}
 		
 		public void setLimit(int limit) {
@@ -192,7 +192,6 @@ public class Game implements Serializable{
 		}
 		
 		public void setWhoStart(int whoStart) {
-			this.whoStart = whoStart;
 			if(whoStart == 1) {
 				this.ai = new MinMaxAI(p1.colour);
 			}
@@ -242,8 +241,8 @@ public class Game implements Serializable{
 		}
 
 
-	public boolean getPodas() {
-		return podas;
+	public boolean getPrune() {
+		return prune;
 	}
 
 	public int getLimit() {
@@ -257,4 +256,19 @@ public class Game implements Serializable{
 	public boolean useTime() {
 		return aiType;
 	}
+	
+	public boolean gameHasStarted() {
+		return gameHasStarted;
+	}
+	
+	public boolean isBoardFull() {
+		int total = board.getSize() * board.getSize();
+		return totalPieces == total;
+	}
+	
+	public boolean isComputerPlaying() {
+		return ai != null;
+	}
+	
+//  ---------- END OF AUXILIAR FUNCTIONS ---------- //
 }
