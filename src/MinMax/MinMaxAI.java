@@ -14,7 +14,7 @@ public class MinMaxAI implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final long NANO=1000000000;
 	public int color;
-    int nodeNumber,lastScore,lastNode;
+    int nodeNumber,lastScore,lastNode;//chosenNode;
 //  ---------- END OF INSTANCE VARIABLES ---------- //
     
 //  ---------- CLASS CONSTRUCTOR ---------- //
@@ -111,7 +111,7 @@ public class MinMaxAI implements Serializable {
         this.nodeNumber = 0;
         long time=System.nanoTime();
         Integer poda=null;
-        int depth,currentNodeNumber = 0,score = 0, auxScore;
+        int depth,currentNodeNumber = 0,score = 0, auxScore,chosenNode=-1;
         depth=game.getLimit();
         boolean prune=game.getPrune(),hasValue = false,myTurn = true;
             for (int[][] move : moves) {
@@ -125,24 +125,28 @@ public class MinMaxAI implements Serializable {
                     score = auxScore;
                     hasValue = true;
                     poda = score;
+                    chosenNode=lastNode;
 
                 } else if (auxScore > score) {
                     board.setBoard(move);
                     score = auxScore;
                     poda = score;
+                    chosenNode=lastNode;
                 }
 
             }
-        DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(score).append("\"]\n");
+            DOT.append(chosenNode+ " [style=filled, color=grey]\n");
+            DOT.append(currentNodeNumber + "[label=\"" + score + "\"]\n");
+            DOT.append("0 [style=filled, color=grey]\n");
+            DOT.append("\n").append("}");
 
-        DOT.append("\n").append("}");
+            StringSelection selection = new StringSelection(DOT.toString());
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboard.setContents(selection, selection);
 
-        StringSelection selection = new StringSelection(DOT.toString());
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(selection, selection);
-        time=(System.nanoTime()-time);
-        //System.out.println("The score was:" + score);
-        //System.out.println("Total time was" + time/NANO+"."+time%NANO/1000000);
+            //time=(System.nanoTime()-time);
+            //System.out.println("The score was:" + score);
+            // System.out.println("Total time was" + time/NANO+"."+time%NANO/1000000);
         return board.getBoard();
     }
 
@@ -151,35 +155,35 @@ public class MinMaxAI implements Serializable {
         current.board.setBoard(lastMove);
         DOT.append(nodeNumber).append("\n");    //me conecte al anterior
         //CASOS BASE
+        if(!myTurn)
+            DOT.append(nodeNumber + "[shape=box]\n");
         if (depth == 0) {
+            this.lastNode=nodeNumber;
             this.lastScore = current.board.calculateScore(current,color);
-            DOT.append(nodeNumber).append(" ").append("[label=\"").append(current.board.score).append("\"]\n");
+            DOT.append(nodeNumber + " [label=\"" + current.board.score + "\"]\n");
             return current.board.score;
         }
-
-        current.switchPlayer();
         if((maxTime!=(-1) && ((System.nanoTime()-startTime)/NANO)>=maxTime))
             return 0;
 
-
+        current.switchPlayer();
         List<int[][]> moves = current.board.getMoves(current);
         boolean hasValue = false;
         int currentNodeNumber = nodeNumber;
-        int auxScore, score = 0;
+        int auxScore, score = 0,chosenNode=-1;
         Integer podaLocal = poda;
 
-        if(!myTurn)
-            DOT.append(nodeNumber).append("[shape=box]\n");
+
         if (moves.size() == 0){
             this.lastScore = current.board.calculateScore(current,color);
-            DOT.append(nodeNumber).append(" ").append("[label=\"").append(current.board.score).append("\"]\n");
+            DOT.append(nodeNumber + " [label=\"" + current.board.score + "\"]\n");
             this.lastNode=currentNodeNumber;
             return current.board.score;
         }
 
 
         for (int[][] move : moves) {
-            DOT.append(currentNodeNumber).append("--"); //me conecto a
+            DOT.append(currentNodeNumber + "--"); //me conecto a
 
             nodeNumber += 1;
 
@@ -193,13 +197,18 @@ public class MinMaxAI implements Serializable {
                 hasValue = true;
                 score = auxScore;
                 podaLocal = score;
+                chosenNode=lastNode;
                 if (prune && poda != null) {
                     if (!myTurn && score <= poda) {
-                        DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(auxScore).append("\"]\n");
+                        DOT.append(currentNodeNumber + " [label=\"" + auxScore +"\"]\n");
+                        DOT.append(currentNodeNumber + " [style=filled, color=red]\n");
+                        this.lastNode=currentNodeNumber;
                         return score;
                     }
                     if (myTurn && score >= poda) {
-                        DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(auxScore).append("\"]\n");
+                        DOT.append(currentNodeNumber + " [label=\"" + auxScore +"\"]\n");
+                        DOT.append(currentNodeNumber + " [style=filled, color=red]\n");
+                        this.lastNode=currentNodeNumber;
                         return score;
                     }
                 }
@@ -208,22 +217,30 @@ public class MinMaxAI implements Serializable {
                 if (myTurn && auxScore > score) {
                     score = auxScore;
                     podaLocal = score;
+                    chosenNode=lastNode;
                     if (prune && poda != null && score <= poda) {
-                        DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(auxScore).append("\"]\n");
+                        DOT.append(currentNodeNumber + " [label=\"" + auxScore +"\"]\n");
+                        DOT.append(chosenNode+ " [style=filled, color=grey]\n");
+                        this.lastNode=currentNodeNumber;
                         return score;
                     }
                 } else if (!myTurn && auxScore < score) {
                     score = auxScore;
                     podaLocal = score;
+                    chosenNode=lastNode;
                     if (prune && poda != null && score >= poda) {
-                        DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(auxScore).append("\"]\n");
+                        DOT.append(currentNodeNumber + " [label=\"" + auxScore +"\"]\n");
+                        DOT.append(chosenNode+ " [style=filled, color=grey]\n");
+                        this.lastNode=currentNodeNumber;
                         return score;
                     }
                 }
             }
         }
-        DOT.append(currentNodeNumber).append(" ").append("[label=\"").append(score).append("\"]\n");
+        DOT.append(currentNodeNumber + " [label=\"" + score + "\"]\n");
         lastScore=game.board.score;
+        DOT.append(chosenNode+ " [style=filled, color=grey]\n");
+        this.lastNode=currentNodeNumber;
         return score;
     }
 
