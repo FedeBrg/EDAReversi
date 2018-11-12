@@ -1,10 +1,6 @@
 package ui;
 
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import MinMax.MinMaxAI;
+import java.util.Map;
 import back.Game;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -12,17 +8,10 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.input.InputEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 public class MainGUI extends Application{
@@ -32,22 +21,25 @@ public class MainGUI extends Application{
 	@Override
     public void init() throws Exception {
         super.init();
+
         Parameters parameters = getParameters();
-        List<String> rawArguments = parameters.getRaw();
+        Map<String, String> arguments = parameters.getNamed();
         
-        //if(rawArguments.size() == 5 && rawArguments.get(1) instanceof String) {
-        	this.game = new Game(Integer.valueOf(rawArguments.get(0)), 
-            		Integer.valueOf(rawArguments.get(1)), rawArguments.get(2).toString(), 
-            		Integer.valueOf(rawArguments.get(3)), rawArguments.get(4));	
-        //}
-        //else if(rawArguments.size() == 5){
-        	//this.game = new Game(Integer.valueOf(rawArguments.get(0)), rawArguments.get(1).toString(), 
-            	//	Integer.valueOf(rawArguments.get(2)), rawArguments.get(3).toString(), rawArguments.get(4).toString());	
-        //}
+        if(!arguments.containsKey("load") && arguments.size() == 5) {
+        	this.game = new Game(Integer.valueOf(arguments.get("size")), 
+            		Integer.valueOf(arguments.get("ai")), arguments.get("mode").toString(), 
+            		Integer.valueOf(arguments.get("param")), arguments.get("prune"));	
+        }
         
-        //else {
-        	//throw new IllegalArgumentException("Incorrect arguments.");
-        //}
+        else if(arguments.size() == 5) {
+        	this.game = new Game(Integer.valueOf(arguments.get("ai")), arguments.get("mode").toString(), 
+            		Integer.valueOf(arguments.get("param")), arguments.get("prune").toString(), arguments.get("load").toString());	
+        }
+        
+        else {
+        	System.out.println("Check parameters. \n");
+        }
+        
         this.reversiBoard = new ReversiBoard();
     }
 	
@@ -59,7 +51,7 @@ public class MainGUI extends Application{
 		pane.setCenter(reversiBoard.createContent(game));
 		Parent scoreboard = reversiBoard.createScoreContent(game);
 		pane.setRight(scoreboard);
-		pane.setAlignment(scoreboard, Pos.BOTTOM_CENTER);
+		BorderPane.setAlignment(scoreboard, Pos.BOTTOM_CENTER);
 		StackPane sp = new StackPane();
 		sp.getChildren().add(new Text(""));
 		pane.setTop(sp);;
