@@ -185,7 +185,7 @@ public class MinMaxAI implements Serializable {
 //            System.out.println("cut");
             return 0;
         }
-        current.switchPlayer();
+//        current.switchPlayer();
         List<int[][]> moves = current.board.getMoves(current);
         boolean hasValue = false;
         int currentNodeNumber = nodeNumber;
@@ -225,11 +225,12 @@ public class MinMaxAI implements Serializable {
                         this.lastNode=currentNodeNumber;
                         return score;
                     }
-                    if (myTurn && score >= poda) {
-                        DOT.append(currentNodeNumber + " [label=\"["+position.getKey()+","+position.getValue()+"]"  + auxScore +"\"]\n");
+                    else {if (myTurn && score >= poda) {
+                        DOT.append(currentNodeNumber + " [label=\"[" + position.getKey() + "," + position.getValue() + "]" + auxScore + "\"]\n");
                         DOT.append(currentNodeNumber + " [style=filled, color=red]\n");
-                        this.lastNode=currentNodeNumber;
+                        this.lastNode = currentNodeNumber;
                         return score;
+                        }
                     }
                 }
             }
@@ -238,7 +239,7 @@ public class MinMaxAI implements Serializable {
                     score = auxScore;
                     podaLocal = score;
                     chosenNode=lastNode;
-                    if (prune && poda != null && score <= poda) {
+                    if (prune && poda != null && score >= poda) {
                         DOT.append(currentNodeNumber + " [label=\"["+position.getKey()+","+position.getValue()+"]"  + auxScore +"\"]\n");
                         DOT.append(chosenNode+ " [style=filled, color=grey]\n");
                         this.lastNode=currentNodeNumber;
@@ -248,7 +249,7 @@ public class MinMaxAI implements Serializable {
                     score = auxScore;
                     podaLocal = score;
                     chosenNode=lastNode;
-                    if (prune && poda != null && score >= poda) {
+                    if (prune && poda != null && score <= poda) {
                         DOT.append(currentNodeNumber + " [label=\"["+position.getKey()+","+position.getValue()+"]"  + auxScore +"\"]\n");
                         DOT.append(chosenNode+ " [style=filled, color=grey]\n");
                         this.lastNode=currentNodeNumber;
